@@ -101,10 +101,11 @@
           <div class="actions" style="justify-content:flex-start;margin-bottom:14px"><button id="recordBtn" class="btn red" onclick="App.Audio.toggle()"><i class="fa-solid fa-microphone"></i> Gravar áudio</button><label class="btn blue" for="audioFile"><i class="fa-solid fa-upload"></i> Enviar áudio</label><input id="audioFile" class="hidden" type="file" accept="audio/*" onchange="App.Audio.upload(this)"><button class="btn green" onclick="App.AI.processText()"><i class="fa-solid fa-wand-magic-sparkles"></i> IA preencher orçamento</button><button class="btn" onclick="App.clearItems()"><i class="fa-solid fa-eraser"></i> Limpar peças/serviços</button></div>
           <div class="drop"><b>Como falar:</b><p class="muted">Diga cliente, veículo, placa, defeito, diagnóstico, serviços com TMO/valor hora/desconto e peças com quantidade/valor unitário.</p></div>
           <label style="margin-top:14px">Texto transcrito / comando manual</label><textarea id="audioText" style="min-height:150px" placeholder="A transcrição aparecerá aqui. Você também pode colar ou digitar um comando e clicar em IA preencher orçamento."></textarea>
-          <label class="checkline"><input type="checkbox" id="aiReplaceItems" checked> Ao aplicar a IA, substituir peças/serviços atuais para evitar duplicidade</label>
+          <label class="checkline"><input type="checkbox" id="aiAppendAudio" checked> Cada novo áudio ADICIONA ao orçamento atual</label>
+          <label class="checkline"><input type="checkbox" id="aiReplaceItems"> Reprocessar texto manual substituindo peças/serviços atuais</label>
           <label class="checkline"><input type="checkbox" id="aiUppercase" checked> Padronizar cliente, veículo, peças e serviços em MAIÚSCULO</label>
-          <label class="checkline"><input type="checkbox" id="aiStrict" checked> Modo fiel absoluto: descartar item que não aparece claramente no áudio/texto</label>
-          <div class="danger-note">Agora a IA é filtrada: se ela tentar devolver “SERVIÇO” genérico, item repetido, peça inventada ou valor sem descrição clara, o sistema descarta antes de somar.</div>
+          <label class="checkline"><input type="checkbox" id="aiStrict"> Filtro ultra rígido: descartar item que a IA escreveu diferente do áudio</label>
+          <div class="danger-note">Correção: novo áudio não apaga o anterior. A IA agora soma áudios em sequência, aceita serviços ditos por verbos como TROCAR, SUBSTITUIR, LIMPAR, ALINHAR, BALANCEAR, POLIR e só não lança descrição vazia/genérica.</div>
         </div>
         <div class="card col-4"><h3><i class="fa-solid fa-list-check"></i> Retorno da IA</h3><div id="aiReturn" class="transcript">Aguardando áudio ou texto...</div><button class="btn primary" style="width:100%;justify-content:center;margin-top:12px" onclick="App.useExampleVoice()"><i class="fa-solid fa-vial"></i> Testar com exemplo</button></div>
         <div class="card col-12"><h3><i class="fa-solid fa-circle-info"></i> Modelo de comando bom</h3><div class="transcript">Cliente 52 BPM Polícia Militar, CNPJ 04.198.514/0071-67, veículo Renault Duster placa FBO3E02, ano 2020, km 241601. Defeito reclamado checklist completo para diagnóstico. Diagnóstico técnico bateria fraca e bicos sujos. Adicionar serviço mecânica substituir bateria, TMO 0,30, valor hora 152,25, desconto 29. Adicionar serviço injeção limpar bicos injetores, TMO 1,50, valor hora 166,36, desconto 29. Adicionar peça bateria 60 amperes, quantidade 1, valor 420 reais.</div></div>
@@ -208,49 +209,117 @@ const App = {
   toggleConfigPanel(id){const el=this.$(id);if(!el)return;el.classList.toggle('collapsed');const btn=el.querySelector('.config-tools .btn');if(btn)btn.innerHTML=el.classList.contains('collapsed')?'<i class="fa-solid fa-plus"></i> Abrir':'<i class="fa-solid fa-minus"></i> Minimizar';},
   maximizeConfigPanel(id){document.querySelectorAll('.config-panel').forEach(p=>{p.classList.remove('col-12');p.classList.add('col-6')});const el=this.$(id);if(!el)return;el.classList.remove('collapsed','col-6');el.classList.add('col-12');el.scrollIntoView({behavior:'smooth',block:'start'});},
   useExampleVoice(){this.$('audioText').value='Cliente 52 BPM Polícia Militar, CNPJ 04.198.514/0071-67, veículo Renault Duster placa FBO3E02, ano 2020, km 241601. Defeito reclamado checklist completo para diagnóstico. Diagnóstico técnico bateria fraca e bicos sujos. Adicionar serviço mecânica substituir bateria, TMO 0,30, valor hora 152,25, desconto 29. Adicionar serviço injeção limpar bicos injetores, TMO 1,50, valor hora 166,36, desconto 29. Adicionar peça bateria 60 amperes, quantidade 1, valor 420 reais.';this.AI.processText();},
-  Audio:{media:null,chunks:[],recording:false,async toggle(){if(this.recording){this.media.stop();return;}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});this.chunks=[];this.media=new MediaRecorder(stream);this.media.ondataavailable=e=>{if(e.data.size)this.chunks.push(e.data)};this.media.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(this.chunks,{type:'audio/webm'});this.transcribe(blob,'gravacao.webm');};this.media.start();this.recording=true;App.$('recordBtn').classList.add('recording');App.$('recordBtn').innerHTML='<i class="fa-solid fa-stop"></i> Parar gravação';App.toast('Gravando...');}catch(e){App.toast('Microfone negado ou indisponível.');}},async upload(input){const f=input.files[0];if(f)this.transcribe(f,f.name)},async transcribe(blob,name){this.recording=false;App.$('recordBtn').classList.remove('recording');App.$('recordBtn').innerHTML='<i class="fa-solid fa-microphone"></i> Gravar áudio';const key=window.SOS_CONFIG.GROQ_API_KEY;if(!key||key.includes('COLE_')){App.toast('Configure a chave Groq no config.js ou na tela Configuração.');return;}App.$('aiReturn').textContent='Enviando áudio para Groq...';const fd=new FormData();fd.append('file',blob,name);fd.append('model',window.SOS_CONFIG.GROQ_TRANSCRIPTION_MODEL||'whisper-large-v3-turbo');fd.append('language','pt');fd.append('response_format','json');try{const res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{Authorization:`Bearer ${key}`},body:fd});const data=await res.json();if(!res.ok)throw new Error(data.error?.message||'Erro na transcrição');App.$('audioText').value=data.text||'';App.$('aiReturn').textContent='Transcrição recebida. Clique em IA preencher orçamento ou aguarde o preenchimento.';await App.AI.processText();}catch(e){App.$('aiReturn').textContent='Falha: '+e.message;App.toast('Falha na transcrição Groq.');}}},
+  Audio:{
+    media:null,chunks:[],recording:false,count:0,
+    async toggle(){
+      if(this.recording){this.media.stop();return;}
+      try{
+        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+        this.chunks=[];this.media=new MediaRecorder(stream);
+        this.media.ondataavailable=e=>{if(e.data.size)this.chunks.push(e.data)};
+        this.media.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(this.chunks,{type:'audio/webm'});this.transcribe(blob,'gravacao.webm');};
+        this.media.start();this.recording=true;App.$('recordBtn').classList.add('recording');App.$('recordBtn').innerHTML='<i class="fa-solid fa-stop"></i> Parar gravação';App.toast('Gravando...');
+      }catch(e){App.toast('Microfone negado ou indisponível.');}
+    },
+    async upload(input){
+      const f=input.files&&input.files[0];
+      if(f) await this.transcribe(f,f.name);
+      input.value='';
+    },
+    appendTranscript(text){
+      this.count++;
+      const old=App.$('audioText').value.trim();
+      const bloco=`[ÁUDIO ${this.count}] ${text}`;
+      App.$('audioText').value=old?old+'\n\n'+bloco:bloco;
+    },
+    async transcribe(blob,name){
+      this.recording=false;App.$('recordBtn').classList.remove('recording');App.$('recordBtn').innerHTML='<i class="fa-solid fa-microphone"></i> Gravar áudio';
+      const key=window.SOS_CONFIG.GROQ_API_KEY;
+      if(!key||key.includes('COLE_')){App.toast('Configure a chave Groq no config.js ou na tela Configuração.');return;}
+      App.$('aiReturn').textContent='Enviando áudio para Groq...';
+      const fd=new FormData();fd.append('file',blob,name);fd.append('model',window.SOS_CONFIG.GROQ_TRANSCRIPTION_MODEL||'whisper-large-v3-turbo');fd.append('language','pt');fd.append('response_format','json');
+      try{
+        const res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{Authorization:`Bearer ${key}`},body:fd});
+        const data=await res.json();if(!res.ok)throw new Error(data.error?.message||'Erro na transcrição');
+        const texto=(data.text||'').trim();
+        if(!texto){App.toast('Transcrição veio vazia.');return;}
+        this.appendTranscript(texto);
+        App.$('aiReturn').textContent='Áudio transcrito. Aplicando SOMENTE este novo áudio ao orçamento...';
+        await App.AI.processText(texto,{fromAudio:true,append:!!(App.$('aiAppendAudio')&&App.$('aiAppendAudio').checked)});
+      }catch(e){App.$('aiReturn').textContent='Falha: '+e.message;App.toast('Falha na transcrição Groq.');}
+    }
+  },
   AI:{
-    async processText(){
-      const text=App.$('audioText').value.trim();
+    async processText(textOverride=null,opts={}){
+      const text=String(textOverride!==null?textOverride:App.$('audioText').value).trim();
       if(!text){App.toast('Digite ou grave um comando.');return;}
       const key=window.SOS_CONFIG.GROQ_API_KEY;
-      if(!key||key.includes('COLE_')){App.$('aiReturn').textContent='Sem chave Groq. Aplicando parser local fiel simples.';this.applyData(this.localParse(text),text);return;}
-      App.$('aiReturn').textContent='IA analisando texto em modo fiel absoluto...';
-      const schema='Retorne SOMENTE JSON válido, sem markdown, no formato {"campos":{"cliente":"","cpfCnpj":"","telefone":"","veiculo":"","placa":"","ano":"","km":"","chassi":"","prefixo":"","fiscalContrato":"","defeito":"","diagnostico":""},"servicos":[{"cod":"","secao":"MECANICA","sistema":"","descricao":"","tmo":0,"valorHora":0,"valorTotal":0,"desc":0}],"pecas":[{"cod":"","descricao":"","fornecedor":"","qtd":1,"valorUnit":0,"desc":0}]}. REGRAS ABSOLUTAS: 1) NÃO invente nada. 2) Só crie serviço quando o texto falar claramente que é SERVIÇO/MÃO DE OBRA e disser a descrição. 3) Só crie peça quando o texto falar claramente peça/material/produto e disser a descrição. 4) Nunca crie descrição genérica como SERVIÇO, ITEM, PEÇA, MÃO DE OBRA, MECÂNICA. 5) Se o usuário falar valor total do serviço, coloque em valorTotal; se falar valor hora, coloque em valorHora. 6) Se não houver valor, use 0. 7) Tudo em MAIÚSCULO. 8) Não use exemplos nem dados de orçamento anterior.';
+      if(!key||key.includes('COLE_')){App.$('aiReturn').textContent='Sem chave Groq. Aplicando parser local.';this.applyData(this.localParse(text),text,opts);return;}
+      App.$('aiReturn').textContent='IA analisando texto fielmente...';
+      const schema='Retorne SOMENTE JSON válido, sem markdown, no formato {"campos":{"cliente":"","cpfCnpj":"","telefone":"","veiculo":"","placa":"","ano":"","km":"","chassi":"","prefixo":"","fiscalContrato":"","defeito":"","diagnostico":""},"servicos":[{"cod":"","secao":"MECANICA","sistema":"","descricao":"","tmo":0,"valorHora":0,"valorTotal":0,"desc":0}],"pecas":[{"cod":"","descricao":"","fornecedor":"","qtd":1,"valorUnit":0,"desc":0}]}. REGRAS: 1) Seja fiel ao texto. Não invente cliente, veículo, peça, serviço ou valor. 2) Serviço/mão de obra deve ser extraído quando o texto disser claramente um trabalho, mesmo sem usar a palavra serviço: TROCAR, SUBSTITUIR, REMOVER, INSTALAR, REMOVER E INSTALAR, LIMPAR, HIGIENIZAR, POLIR, ALINHAR, BALANCEAR, REVISAR, CONSERTAR, RECUPERAR, REGULAR, DIAGNOSTICAR. 3) Peça/material/produto deve ser extraído quando o texto citar item físico com quantidade/valor ou quando disser peça/material/produto. 4) Nunca crie descrição genérica como SERVIÇO, ITEM, PEÇA, MÃO DE OBRA, MECÂNICA. 5) Se falar valor total do serviço, coloque em valorTotal. Se falar valor hora, coloque em valorHora. Se não houver valor, use 0. 6) Se falar desconto, coloque desc. 7) Tudo em MAIÚSCULO. 8) Não use dados de exemplo nem orçamento anterior. 9) Em novo áudio, devolva apenas o que apareceu neste texto.';
       try{
-        const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify({model:window.SOS_CONFIG.GROQ_CHAT_MODEL||'openai/gpt-oss-20b',temperature:0,messages:[{role:'system',content:'Você é um extrator CONSERVADOR e FIEL de orçamento automotivo. Se estiver em dúvida, deixe vazio. Nunca complete por suposição.'},{role:'user',content:schema+'\nTEXTO REAL DO ÁUDIO/COMANDO:\n'+text}]})});
+        const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify({model:window.SOS_CONFIG.GROQ_CHAT_MODEL||'openai/gpt-oss-20b',temperature:0,messages:[{role:'system',content:'Você é um extrator fiel de orçamento automotivo. Extraia o que foi dito. Não complete por suposição, mas não descarte serviços reais quando forem ditos por verbos de trabalho.'},{role:'user',content:schema+'\nTEXTO REAL DO ÁUDIO/COMANDO:\n'+text}]})});
         const data=await res.json();if(!res.ok)throw new Error(data.error?.message||'Erro na IA');
         let content=data.choices?.[0]?.message?.content||'';content=content.replace(/```json|```/g,'').trim();
-        const json=JSON.parse(content);App.$('aiReturn').textContent=JSON.stringify(json,null,2);this.applyData(json,text);App.toast('IA aplicada com filtro fiel. Revise antes de enviar.');
-      }catch(e){App.$('aiReturn').textContent='IA falhou: '+e.message+'\nAplicando parser local fiel simples.';this.applyData(this.localParse(text),text);}
+        let json=JSON.parse(content);
+        json=this.mergeSupplement(json,this.localParse(text));
+        App.$('aiReturn').textContent=JSON.stringify(json,null,2);
+        this.applyData(json,text,opts);App.toast('Áudio aplicado ao orçamento.');
+      }catch(e){App.$('aiReturn').textContent='IA falhou: '+e.message+'\nAplicando parser local.';this.applyData(this.localParse(text),text,opts);}
     },
-    badDesc(desc){const d=App.normText(desc||'',true);return !d||['SERVICO','SERVIÇO','MAO DE OBRA','MÃO DE OBRA','PECA','PEÇA','ITEM','MECANICA','MECÂNICA','MATERIAL','PRODUTO'].includes(d)||d.length<4;},
-    words(desc){return App.normText(desc||'',true).normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/[^A-Z0-9]+/).filter(w=>w.length>3&&!['PARA','COMO','LADO','VALOR','TOTAL','SERVICO','PECA','MAO','OBRA'].includes(w));},
+    badDesc(desc){const d=App.normText(desc||'',true);return !d||['SERVICO','SERVIÇO','MAO DE OBRA','MÃO DE OBRA','PECA','PEÇA','ITEM','MECANICA','MECÂNICA','MATERIAL','PRODUTO'].includes(d)||d.length<3;},
+    words(desc){return App.normText(desc||'',true).normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/[^A-Z0-9]+/).filter(w=>w.length>2&&!['PARA','COMO','LADO','VALOR','TOTAL','SERVICO','PECA','MAO','OBRA','COM','DOS','DAS','DE'].includes(w));},
     appearsInSource(desc,source){const src=App.normText(source||'',true).normalize('NFD').replace(/[\u0300-\u036f]/g,'');const words=this.words(desc);if(!words.length)return false;return words.some(w=>src.includes(w));},
-    applyData(json,sourceText=''){
-      const replace=App.$('aiReplaceItems')?App.$('aiReplaceItems').checked:true;if(replace){App.state.services=[];App.state.parts=[];}
-      const upper=!(App.$('aiUppercase')&&!App.$('aiUppercase').checked);const strict=!(App.$('aiStrict')&&!App.$('aiStrict').checked);
+    mergeSupplement(json,local){
+      json=json||{};json.campos=Object.assign({},local.campos||{},json.campos||{});json.servicos=json.servicos||[];json.pecas=json.pecas||[];
+      const sk=s=>App.normText(s.descricao||'',true);(local.servicos||[]).forEach(s=>{if(s.descricao&&!json.servicos.some(x=>sk(x)===sk(s)))json.servicos.push(s)});
+      const pk=p=>App.normText(p.descricao||'',true);(local.pecas||[]).forEach(p=>{if(p.descricao&&!json.pecas.some(x=>pk(x)===pk(p)))json.pecas.push(p)});
+      return json;
+    },
+    applyData(json,sourceText='',opts={}){
+      let replace=false;
+      if(opts.append===true) replace=false;
+      else if(opts.fromAudio) replace=false;
+      else replace=App.$('aiReplaceItems')?App.$('aiReplaceItems').checked:false;
+      if(replace){App.state.services=[];App.state.parts=[];}
+      const upper=!(App.$('aiUppercase')&&!App.$('aiUppercase').checked);const strict=!!(App.$('aiStrict')&&App.$('aiStrict').checked);
       const c=json.campos||{};Object.entries(c).forEach(([k,v])=>{if(v!==undefined&&v!==null&&String(v).trim()&&App.$(k)){let val=String(v).trim();if(upper&&['cliente','veiculo','placa','prefixo','fiscalContrato','defeito','diagnostico'].includes(k))val=val.toUpperCase();App.$(k).value=val}});
       let rejected=[];
       (json.servicos||[]).forEach(s=>{const desc=String(s.descricao||'').trim();if(this.badDesc(desc)||(strict&&!this.appearsInSource(desc,sourceText))){if(desc)rejected.push('SERVIÇO DESCARTADO: '+desc);return;}App.addService(s);});
       (json.pecas||[]).forEach(p=>{const desc=String(p.descricao||'').trim();if(this.badDesc(desc)||(strict&&!this.appearsInSource(desc,sourceText))){if(desc)rejected.push('PEÇA DESCARTADA: '+desc);return;}App.addPart(p);});
-      App.renderAll();App.saveLocal(true);if(rejected.length)App.$('aiReturn').textContent+=(App.$('aiReturn').textContent?'\n\n':'')+'FILTRO FIEL:\n'+rejected.join('\n');
+      App.renderAll();App.saveLocal(true);if(rejected.length)App.$('aiReturn').textContent+=(App.$('aiReturn').textContent?'\n\n':'')+'FILTRO ULTRA RÍGIDO:\n'+rejected.join('\n');
     },
+    inferSection(desc,all){
+      const t=String(desc||'').toLowerCase();
+      const full=String(all||'').toLowerCase();
+      if(/bico|inje[cç][aã]o|vela|aliment/.test(t))return 'INJECAO / ALIMENTACAO';
+      if(/bateria|alternador|el[eé]tric|l[aâ]mpada|farol|lanterna/.test(t))return 'ELETRICA';
+      if(/pneu|balance|alinh/.test(t))return 'BORRACHARIA';
+      if(/cambio|câmbio|embreagem|tulipa/.test(t))return 'CAMBIO';
+      if(/banco|tape[cç]aria|carpete|courvin/.test(t))return 'TAPECARIA / CAPOTARIA';
+      if(/pint|funilar|polir|grafismo/.test(t))return 'FUNILARIA / PINTURA';
+      if(/lavar|higien/.test(t))return 'LAVAGEM / HIGIENIZACAO';
+      return 'MECANICA';
+    },
+    cleanDesc(x){return String(x||'').replace(/^(servi[cç]o|m[aã]o de obra|pe[cç]a|material|produto)\s+/i,'').replace(/\b(valor|por|r\$|reais?|tmo|desconto)\b.*$/i,'').replace(/\s+/g,' ').trim();},
     localParse(text){
       const lower=text.toLowerCase();const campos={};
       const placa=text.match(/placa\s+([a-zA-Z0-9]{7})/i);if(placa)campos.placa=placa[1].toUpperCase();
       const ano=text.match(/ano\s+(\d{4})/i);if(ano)campos.ano=ano[1];
       const km=text.match(/km\s+([\d\.]+)/i);if(km)campos.km=km[1];
-      const cli=text.match(/cliente\s+([^,.]+)/i);if(cli)campos.cliente=cli[1].trim();
-      const vei=text.match(/ve[ií]culo\s+([^,.]+)/i);if(vei)campos.veiculo=vei[1].trim();
-      const def=text.match(/defeito(?: reclamado)?\s+([^\.]+)/i);if(def)campos.defeito=def[1].trim();
-      const diag=text.match(/diagn[oó]stico(?: t[eé]cnico)?\s+([^\.]+)/i);if(diag)campos.diagnostico=diag[1].trim();
-      const servicos=[];
-      const serviceRe=/(?:adicionar\s+)?(?:servi[cç]o|m[aã]o de obra)\s+([^,.]+?)(?=(?:\s+tmo|\s+valor\s+hora|\s+valor\s+total|\s+por\s+r?\$?|,|\.|$))(?:,?\s*TMO\s*([\d,.]+))?(?:,?\s*valor\s*hora\s*([\d,.]+))?(?:,?\s*(?:valor\s*total|por|valor)\s*r?\$?\s*([\d,.]+))?(?:,?\s*desconto\s*([\d,.]+))?/gi;
-      [...text.matchAll(serviceRe)].forEach(m=>servicos.push({secao:lower.includes('injeção')?'INJECAO / ALIMENTACAO':'MECANICA',descricao:m[1],tmo:App.num(m[2]||0),valorHora:App.num(m[3]||0),valorTotal:App.num(m[4]||0),desc:App.num(m[5]||0)}));
-      const pecas=[];
-      const partRe=/(?:adicionar\s+)?(?:pe[cç]a|material|produto)\s+([^,.]+?)(?=(?:\s+quantidade|\s+qtd|\s+valor|,|\.|$))(?:,?\s*(?:quantidade|qtd)\s*([\d,.]+))?(?:,?\s*valor\s*(?:unit[aá]rio)?\s*r?\$?\s*([\d,.]+))?/gi;
-      [...text.matchAll(partRe)].forEach(m=>pecas.push({descricao:m[1],qtd:App.num(m[2]||1),valorUnit:App.num(m[3]||0)}));
+      const cli=text.match(/cliente\s+([^,.\n]+)/i);if(cli)campos.cliente=cli[1].trim();
+      const vei=text.match(/ve[ií]culo\s+([^,.\n]+)/i);if(vei)campos.veiculo=vei[1].trim();
+      const def=text.match(/defeito(?: reclamado)?\s+([^\.\n]+)/i);if(def)campos.defeito=def[1].trim();
+      const diag=text.match(/diagn[oó]stico(?: t[eé]cnico)?\s+([^\.\n]+)/i);if(diag)campos.diagnostico=diag[1].trim();
+      const servicos=[];const pecas=[];
+      const source=text.replace(/\n/g,'. ');
+      const action='trocar|substituir|remover e instalar|remover|instalar|limpar|higienizar|polir|alinhar|balancear|revisar|consertar|recuperar|regular|diagnosticar|fazer';
+      const srvRe=new RegExp('(?:servi[cç]o\\s+|m[aã]o de obra\\s+)?\\b('+action+')\\s+([^.,;\\n]+?)(?:\\s+(?:tmo)\\s*([\\d,.]+))?(?:\\s+(?:valor hora)\\s*r?\\$?\\s*([\\d,.]+))?(?:\\s+(?:valor total|valor|por)\\s*r?\\$?\\s*([\\d,.]+)|\\s+r?\\$\\s*([\\d,.]+)|\\s+([\\d]{2,}(?:,[\\d]{2})?)\\s*(?:reais?)?)?(?=\\s*(?:,|;|\\.|$|\\b(?:'+action+')\\b|\\bpe[cç]a\\b|\\bmaterial\\b|\\bproduto\\b))','gi');
+      [...source.matchAll(srvRe)].forEach(m=>{let desc=this.cleanDesc((m[1]+' '+m[2]).trim()); if(!this.badDesc(desc))servicos.push({secao:this.inferSection(desc,source),sistema:'',descricao:desc,tmo:App.num(m[3]||0),valorHora:App.num(m[4]||0),valorTotal:App.num(m[5]||m[6]||m[7]||0),desc:0});});
+      const explicitSrv=/(?:servi[cç]o|m[aã]o de obra)\s+([^.,;\n]+?)(?:\s+(?:tmo)\s*([\d,.]+))?(?:\s+(?:valor hora)\s*r?\$?\s*([\d,.]+))?(?:\s+(?:valor total|valor|por)\s*r?\$?\s*([\d,.]+))?(?=\s*(?:,|;|\.|$))/gi;
+      [...source.matchAll(explicitSrv)].forEach(m=>{let desc=this.cleanDesc(m[1]); if(!this.badDesc(desc)&&!servicos.some(s=>App.normText(s.descricao,true)===App.normText(desc,true)))servicos.push({secao:this.inferSection(desc,source),sistema:'',descricao:desc,tmo:App.num(m[2]||0),valorHora:App.num(m[3]||0),valorTotal:App.num(m[4]||0),desc:0});});
+      const partRe=/(?:pe[cç]a|material|produto)\s+([^.,;\n]+?)(?:\s+(?:quantidade|qtd)\s*([\d,.]+))?(?:\s+(?:valor unit[aá]rio|valor|por)\s*r?\$?\s*([\d,.]+)|\s+r?\$\s*([\d,.]+)|\s+([\d]{2,}(?:,[\d]{2})?)\s*(?:reais?)?)?(?=\s*(?:,|;|\.|$|\bpe[cç]a\b|\bmaterial\b|\bproduto\b|\bservi[cç]o\b))/gi;
+      [...source.matchAll(partRe)].forEach(m=>{let desc=this.cleanDesc(m[1]);if(!this.badDesc(desc))pecas.push({descricao:desc,qtd:App.num(m[2]||1)||1,valorUnit:App.num(m[3]||m[4]||m[5]||0),desc:0});});
       return{campos,servicos,pecas};
     }
   }
