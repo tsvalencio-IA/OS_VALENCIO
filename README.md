@@ -36,3 +36,15 @@ Chave em `config.js` no GitHub Pages fica exposta para qualquer pessoa que abrir
 
 "Cliente Polícia Militar, veículo Renault Duster placa FBO3E02, ano 2020, km 241601. Defeito reclamado checklist completo. Adicionar serviço mecânica substituir bateria, TMO 0,3, valor hora 152,25, desconto 29%. Adicionar peça bateria 60 amperes, quantidade 1, valor unitário 420 reais. Diagnóstico técnico bateria com baixa carga."
 
+
+## Correção aplicada nesta versão
+
+- Botão **Limpar orçamento** na barra superior.
+- Botão **Limpar peças/serviços** na aba de áudio e em Configuração.
+- IA agora aplica, por padrão, substituição dos itens atuais antes de preencher, evitando duplicidade.
+- IA orientada a não inventar peças, serviços, valores, cliente, veículo ou diagnóstico.
+- Padronização em MAIÚSCULO para cliente, veículo, peças, serviços, defeito e diagnóstico.
+- Deduplicação local: mesmo que a IA devolva item repetido, o sistema não lança duplicado.
+- Aba Configuração com painéis minimizáveis e maximizáveis para celular e computador.
+
+Importante: se o navegador já tiver orçamento salvo antigo no localStorage, clique em **Limpar orçamento** ou **Limpar dados locais** depois de publicar esta versão.
