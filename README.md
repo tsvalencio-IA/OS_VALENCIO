@@ -66,5 +66,13 @@ Importante: se o navegador já tiver orçamento salvo antigo no localStorage, cl
 - Quantidade falada por extenso é reconhecida: "dois discos de freio 640" vira quantidade 2.
 - Quando a quantidade é maior que 1 e o áudio não diz "valor unitário" ou "cada", o valor falado é tratado como total da linha e dividido pela quantidade para manter a soma fiel.
 - Preferências antigas de menu salvas no navegador são ignoradas nesta versão para o sistema voltar a abrir direto no áudio com menu escondido.
+- Frase como **"R$400,00 a serviço R$119,00"** agora não joga serviço em peças: lança **SERVIÇO** com valor total de R$ 119,00. O valor solto de R$ 400,00 fica sem lançamento porque não tem descrição confiável no áudio.
+
+## Correção 4 - serviço com descrição vazia da IA
+
+- Se a Groq devolver `servicos: [{ descricao: "", valorTotal: 1109 }]`, o sistema agora corrige antes de salvar.
+- Quando a transcrição contém **serviço** ou **mão de obra**, o item recebe descrição **SERVIÇO** ou **MÃO DE OBRA** e o valor fica em `valorTotal`.
+- Para áudio, o sistema não depende mais de TMO ou valor/hora. Valor falado de serviço é tratado como total do serviço.
+- A tela mostra o aviso **VERSÃO 10.12** para confirmar que o GitHub Pages está rodando a versão correta.
 
 Após subir no GitHub Pages, use **Ctrl+F5** no computador ou limpe o cache no celular. Também clique em **Limpar orçamento** para apagar dados antigos salvos no navegador.
