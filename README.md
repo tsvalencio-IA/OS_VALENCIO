@@ -56,7 +56,15 @@ Importante: se o navegador já tiver orçamento salvo antigo no localStorage, cl
 - Existe botão flutuante **Áudio direto** para uso no celular.
 - A configuração tem a opção de iniciar com menu escondido ou escolher a tela inicial.
 - A IA agora usa **modo fiel absoluto**: descarta serviço/peça genérica, repetida ou que não aparece claramente no texto transcrito.
-- Serviço com valor total informado e sem TMO passa a somar corretamente como TMO 1 x valor total.
-- Serviços genéricos como “SERVIÇO”, “ITEM”, “MÃO DE OBRA” ou “MECÂNICA” são descartados antes de entrar no orçamento.
+- Serviço com valor total informado e sem TMO passa a somar corretamente no total do serviço, sem transformar o valor em descrição.
+- Serviços genéricos inventados continuam bloqueados. Exceção: se o áudio disser literalmente **"serviço 500"** ou **"mão de obra 500"**, o sistema lança descrição **SERVIÇO/MÃO DE OBRA** com valor total de R$ 500,00.
+
+## Correção 3 - lista falada de peças e serviço
+
+- Frase como **"kit junto à tampa de válvula 383, tampa de válvula usada 400 reais, dois discos de freio 640, jogo de pastilha 293 e serviço 500"** agora é interpretada corretamente.
+- Peças faladas em lista, mesmo sem repetir a palavra "peça", entram como peças quando terminam com valor.
+- Quantidade falada por extenso é reconhecida: "dois discos de freio 640" vira quantidade 2.
+- Quando a quantidade é maior que 1 e o áudio não diz "valor unitário" ou "cada", o valor falado é tratado como total da linha e dividido pela quantidade para manter a soma fiel.
+- Preferências antigas de menu salvas no navegador são ignoradas nesta versão para o sistema voltar a abrir direto no áudio com menu escondido.
 
 Após subir no GitHub Pages, use **Ctrl+F5** no computador ou limpe o cache no celular. Também clique em **Limpar orçamento** para apagar dados antigos salvos no navegador.
