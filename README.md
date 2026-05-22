@@ -48,3 +48,15 @@ Chave em `config.js` no GitHub Pages fica exposta para qualquer pessoa que abrir
 - Aba Configuração com painéis minimizáveis e maximizáveis para celular e computador.
 
 Importante: se o navegador já tiver orçamento salvo antigo no localStorage, clique em **Limpar orçamento** ou **Limpar dados locais** depois de publicar esta versão.
+
+## Correção 2 - modo celular e fidelidade do áudio
+
+- O menu lateral agora pode ser escondido/aberto pelo botão **Menu**.
+- Por padrão o sistema abre direto na tela **Preencher por áudio**.
+- Existe botão flutuante **Áudio direto** para uso no celular.
+- A configuração tem a opção de iniciar com menu escondido ou escolher a tela inicial.
+- A IA agora usa **modo fiel absoluto**: descarta serviço/peça genérica, repetida ou que não aparece claramente no texto transcrito.
+- Serviço com valor total informado e sem TMO passa a somar corretamente como TMO 1 x valor total.
+- Serviços genéricos como “SERVIÇO”, “ITEM”, “MÃO DE OBRA” ou “MECÂNICA” são descartados antes de entrar no orçamento.
+
+Após subir no GitHub Pages, use **Ctrl+F5** no computador ou limpe o cache no celular. Também clique em **Limpar orçamento** para apagar dados antigos salvos no navegador.

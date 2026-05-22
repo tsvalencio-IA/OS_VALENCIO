@@ -24,5 +24,9 @@ window.SOS_CONFIG = {
     prefixoArquivo: "Orcamento_SOS_Valencio",
     statusPadrao: "Orçamento_Enviado",
     descontoPadrao: 0
+  },
+  UI: {
+    menuCollapsedDefault: true,
+    startSection: "secAudio"
   }
 };
