@@ -105,7 +105,7 @@
           <label class="checkline"><input type="checkbox" id="aiReplaceItems"> Reprocessar texto manual substituindo peças/serviços atuais</label>
           <label class="checkline"><input type="checkbox" id="aiUppercase" checked> Padronizar cliente, veículo, peças e serviços em MAIÚSCULO</label>
           <label class="checkline"><input type="checkbox" id="aiStrict"> Filtro ultra rígido: descartar item que a IA escreveu diferente do áudio</label>
-          <div class="danger-note">VERSÃO 10.12 - Modo fiel: serviço falado em valor total entra como SERVIÇO, sem exigir hora/TMO. Mesmo se a IA devolver descrição vazia, o valor do serviço é salvo quando a transcrição contém “serviço” ou “mão de obra”.</div>
+          <div class="danger-note">VERSÃO 10.13 - Modo fiel: serviço sempre usa valor total falado, sem hora/TMO. Se o áudio disser “R$400,00 ... serviço”, esse R$400,00 vence qualquer JSON errado da IA.</div>
         </div>
         <div class="card col-4"><h3><i class="fa-solid fa-list-check"></i> Retorno da IA</h3><div id="aiReturn" class="transcript">Aguardando áudio ou texto...</div><button class="btn primary" style="width:100%;justify-content:center;margin-top:12px" onclick="App.useExampleVoice()"><i class="fa-solid fa-vial"></i> Testar com exemplo</button></div>
         <div class="card col-12"><h3><i class="fa-solid fa-circle-info"></i> Modelo de comando bom</h3><div class="transcript">Cliente 52 BPM Polícia Militar, CNPJ 04.198.514/0071-67, veículo Renault Duster placa FBO3E02, ano 2020, km 241601. Defeito reclamado checklist completo para diagnóstico. Diagnóstico técnico bateria fraca e bicos sujos. Adicionar serviço mecânica substituir bateria, TMO 0,30, valor hora 152,25, desconto 29. Adicionar serviço injeção limpar bicos injetores, TMO 1,50, valor hora 166,36, desconto 29. Adicionar peça bateria 60 amperes, quantidade 1, valor 420 reais.</div></div>
@@ -307,9 +307,18 @@ const App = {
     sourceMentionsService(source){return /\b(SERVICO|SERVICOS|MAO\s+DE\s+OBRA|OBRA)\b/.test(this.plain(source));},
     sourceMentionsHour(source){return /\b(TMO|HORA|HORAS|VALOR\s+HORA|VALOR\s+H)\b/.test(this.plain(source));},
     serviceValue(item){return App.num(item&&(item.valorTotal??item.valor_total??item.total??item.valor??item.valorHora??item.valor_hora??item.valorUnit??item.valor_unitario));},
+    serviceValueFromSource(source){
+      const txt=String(source||'');const n='([0-9]{1,3}(?:\\.[0-9]{3})*(?:,[0-9]+)?|[0-9]+(?:[,.][0-9]+)?)';
+      let m=txt.match(new RegExp('(?:r\\$\\s*)'+n+'\\s*(?:reais?)?\\s*(?:o|a|de|do|da)?\\s*(?:servi[cç]o|m[aã]o de obra)\\b','i'));
+      if(m)return App.num(m[1]);
+      m=txt.match(new RegExp('(?:servi[cç]o|m[aã]o de obra)\\s*(?:de\\s*)?(?:r\\$\\s*)?'+n+'\\s*(?:reais?)?','i'));
+      if(m)return App.num(m[1]);
+      m=txt.match(new RegExp('\\b'+n+'\\s*(?:reais?)?\\s*(?:o|a|de|do|da)?\\s*(?:servi[cç]o|m[aã]o de obra)\\b','i'));
+      return m?App.num(m[1]):0;
+    },
     normalizeServiceItem(item,source){
       const s=Object.assign({},item||{});const hasHour=this.sourceMentionsHour(source);const mentionsService=this.sourceMentionsService(source);
-      let desc=String(s.descricao||'').trim();const total=this.serviceValue(s);
+      let desc=String(s.descricao||'').trim();let total=this.serviceValueFromSource(source)||this.serviceValue(s);
       if((!desc||this.badDesc(desc))&&total>0&&mentionsService)desc=/\bMAO\s+DE\s+OBRA|OBRA\b/.test(this.plain(source))?'MÃO DE OBRA':'SERVIÇO';
       s.descricao=desc;
       if(total>0&&!hasHour){

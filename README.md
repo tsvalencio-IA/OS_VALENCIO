@@ -73,6 +73,12 @@ Importante: se o navegador já tiver orçamento salvo antigo no localStorage, cl
 - Se a Groq devolver `servicos: [{ descricao: "", valorTotal: 1109 }]`, o sistema agora corrige antes de salvar.
 - Quando a transcrição contém **serviço** ou **mão de obra**, o item recebe descrição **SERVIÇO** ou **MÃO DE OBRA** e o valor fica em `valorTotal`.
 - Para áudio, o sistema não depende mais de TMO ou valor/hora. Valor falado de serviço é tratado como total do serviço.
-- A tela mostra o aviso **VERSÃO 10.12** para confirmar que o GitHub Pages está rodando a versão correta.
+- A tela mostra o aviso **VERSÃO 10.13** para confirmar que o GitHub Pages está rodando a versão correta.
+
+## Correção 5 - valor antes da palavra serviço
+
+- Frase como **"R$400,00 a serviço R$1109,00"** agora lança serviço de **R$400,00**.
+- O valor antes de **serviço/mão de obra** vence o JSON da IA quando a IA devolver `1`, `1109`, vazio ou outro valor errado.
+- Isso preserva o uso real da oficina: vocês falam valor final do serviço, nunca valor por hora.
 
 Após subir no GitHub Pages, use **Ctrl+F5** no computador ou limpe o cache no celular. Também clique em **Limpar orçamento** para apagar dados antigos salvos no navegador.
