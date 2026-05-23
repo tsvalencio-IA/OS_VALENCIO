@@ -4,566 +4,2494 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>SOS Orçamentos IA - thIAguinho Soluções</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
   <script src="config.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
   <style>
     :root{
-      --navy:#132033; --navy2:#25364f; --ink:#111827; --muted:#6b7280; --bg:#eef2f7; --card:#ffffff;
-      --line:#cbd5e1; --green:#14804a; --red:#c62828; --gold:#c89b3c; --blue:#1769aa;
-      --radius:18px; --shadow:0 16px 40px rgba(15,23,42,.12);
+      --navy:#111827;
+      --navy2:#1f2937;
+      --ink:#111827;
+      --muted:#6b7280;
+      --bg:#f3f4f6;
+      --card:#ffffff;
+      --line:#d1d5db;
+      --soft:#f9fafb;
+      --green:#166534;
+      --red:#991b1b;
+      --blue:#1d4ed8;
+      --radius:16px;
+      --shadow:0 12px 28px rgba(15,23,42,.08);
     }
-    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    body{font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-    button,input,select,textarea{font-family:inherit}
-    .app{display:grid;grid-template-columns:360px 1fr;min-height:100vh;transition:grid-template-columns .25s ease}
-    .app.menu-collapsed{grid-template-columns:0 1fr}
-    aside{background:linear-gradient(180deg,var(--navy),#0c1421);color:#fff;padding:22px;position:sticky;top:0;height:100vh;overflow:auto;transition:transform .25s ease,width .25s ease,padding .25s ease;z-index:900}
-    .app.menu-collapsed aside{transform:translateX(-105%);width:0;padding:0;overflow:hidden}
-    .menu-toggle{position:fixed;left:12px;top:12px;z-index:1200;border:0;border-radius:999px;padding:12px 14px;background:var(--navy);color:#fff;font-weight:900;box-shadow:0 10px 26px rgba(15,23,42,.25);display:inline-flex;align-items:center;gap:8px;cursor:pointer}
-    .menu-toggle .txt{font-size:13px}.app:not(.menu-collapsed)+.quick-audio{display:none}
-    .brandbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.close-menu{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;border-radius:12px;padding:9px 11px;font-weight:900;cursor:pointer}
-    .quick-audio{position:fixed;right:14px;bottom:16px;z-index:1100;border:0;border-radius:999px;padding:14px 18px;background:var(--green);color:#fff;font-weight:900;box-shadow:0 14px 36px rgba(20,128,74,.35);display:flex;gap:9px;align-items:center;cursor:pointer}
-    .brand h1{font-size:21px;font-weight:900;letter-spacing:.03em}.brand p{font-size:12px;color:#cbd5e1;margin-top:6px;line-height:1.45}
-    .status-chip{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 10px;border:1px solid rgba(255,255,255,.18);border-radius:999px;font-size:12px;font-weight:800;color:#dbeafe;background:rgba(255,255,255,.06)}
-    nav{display:grid;gap:10px;margin-top:25px}.navbtn{border:0;border-radius:14px;padding:14px 14px;background:rgba(255,255,255,.08);color:#fff;text-align:left;font-weight:800;display:flex;align-items:center;gap:10px;cursor:pointer}.navbtn.active,.navbtn:hover{background:#fff;color:var(--navy)}
-    .sidebox{margin-top:24px;border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:14px;background:rgba(255,255,255,.06)}.sidebox b{font-size:13px}.sidebox p{font-size:12px;color:#d1d5db;line-height:1.5;margin-top:8px}
-    main{padding:22px;overflow:auto}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.topbar h2{font-size:24px;font-weight:900}.topbar p{font-size:13px;color:var(--muted);margin-top:4px}.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .btn{border:0;border-radius:12px;padding:12px 14px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:#e5e7eb;color:#111827}.btn:hover{filter:brightness(.98);transform:translateY(-1px)}.btn.primary{background:var(--navy);color:#fff}.btn.green{background:var(--green);color:#fff}.btn.red{background:var(--red);color:#fff}.btn.blue{background:var(--blue);color:#fff}.btn.gold{background:var(--gold);color:#fff}.btn.small{padding:8px 10px;border-radius:10px;font-size:12px}.btn.recording{background:var(--red);color:#fff;animation:pulse 1s infinite}@keyframes pulse{50%{box-shadow:0 0 0 10px rgba(198,40,40,.12)}}
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}.card h3{font-size:16px;font-weight:900;margin-bottom:14px;color:var(--navy);display:flex;align-items:center;gap:8px}.col-12{grid-column:span 12}.col-8{grid-column:span 8}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}.col-2{grid-column:span 2}
-    label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:900;color:#334155;margin-bottom:7px}input,select,textarea{width:100%;border:1.7px solid var(--line);border-radius:12px;padding:11px;background:#fff;font-weight:700;color:#111827;outline:none}textarea{min-height:86px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(23,105,170,.12)}
-    .section{display:none}.section.active{display:block}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px}.data-table{width:100%;border-collapse:collapse;min-width:920px}.data-table th{background:var(--navy);color:#fff;text-align:left;font-size:12px;padding:10px}.data-table td{border-top:1px solid var(--line);padding:8px;background:#fff;vertical-align:top}.data-table input,.data-table select{padding:8px;border-radius:9px;font-size:12px}.data-table textarea{min-height:42px;padding:8px;border-radius:9px;font-size:12px}.right{text-align:right}.totals{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.totalbox{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:14px}.totalbox span{display:block;font-size:11px;color:var(--muted);font-weight:900;text-transform:uppercase}.totalbox b{display:block;font-size:22px;margin-top:6px;color:var(--navy)}.totalbox.grand{background:#ecfdf5;border-color:#86efac}.totalbox.grand b{color:var(--green);font-size:28px}
-    .pdfsheet{background:#fff;max-width:900px;margin:0 auto;border:1px solid #cbd5e1;box-shadow:var(--shadow);padding:24px}.pdf-head{display:flex;justify-content:space-between;gap:20px;border-bottom:4px solid var(--navy);padding-bottom:18px;margin-bottom:22px}.pdf-head h1{font-size:18px;letter-spacing:.1em}.pdf-head p{font-size:11px;color:#334155;line-height:1.5}.pdf-title{text-align:right;font-size:18px;font-weight:900;letter-spacing:.06em;color:var(--navy)}.pdf-table{width:100%;border-collapse:collapse;margin-bottom:20px}.pdf-table td,.pdf-table th{border:1px solid #cbd5e1;padding:8px;font-size:12px}.pdf-bar{background:var(--navy);color:#fff;font-weight:900;padding:9px 10px;font-size:12px;text-transform:uppercase;margin:14px 0 8px}.empty{color:#64748b;font-size:13px;text-align:center;padding:18px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111827;color:#fff;padding:13px 18px;border-radius:999px;box-shadow:var(--shadow);font-weight:800;z-index:1000;display:none}.toast.show{display:block}.hidden{display:none!important}.muted{color:var(--muted);font-size:12px;line-height:1.5}.transcript{white-space:pre-wrap;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:14px;font-size:13px;line-height:1.5;min-height:74px}.drop{border:2px dashed #94a3b8;border-radius:16px;padding:18px;text-align:center;background:#f8fafc}.powered{text-align:center;color:#64748b;font-size:12px;font-weight:900;margin:26px 0 4px}.danger-note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:12px;border-radius:14px;font-size:12px;font-weight:700;line-height:1.45;margin-top:12px}.ok-note{background:#ecfdf5;border:1px solid #86efac;color:#166534;padding:12px;border-radius:14px;font-size:12px;font-weight:800;line-height:1.45;margin-top:12px}.compact-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.checkline{display:flex!important;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:#111827;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:12px}.checkline input{width:auto}.config-panel.collapsed .config-body{display:none}.config-tools{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}.card-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.card-title-row h3{margin-bottom:0}
-    @media(max-width:980px){.app{display:block}.app.menu-collapsed{display:block}aside{position:fixed;left:0;top:0;width:86vw;max-width:360px;height:100vh}.app.menu-collapsed aside{transform:translateX(-105%);width:86vw;padding:22px}.topbar{display:block;padding-left:54px}.actions{justify-content:flex-start;margin-top:12px}.actions .btn{flex:1;justify-content:center}.col-8,.col-6,.col-4,.col-3,.col-2{grid-column:span 12}.totals{grid-template-columns:1fr}.pdfsheet{padding:14px}.pdf-head{display:block}.pdf-title{text-align:left;margin-top:12px}.data-table{min-width:760px}main{padding:12px}.card{padding:14px}.quick-audio{left:12px;right:12px;justify-content:center}}
-    @media print{aside,.topbar,.no-print{display:none!important}main{padding:0}.card{box-shadow:none;border:0}.pdfsheet{box-shadow:none;border:0;max-width:100%;padding:0}.app{display:block;background:#fff}}
-  
 
-    /* ================== AJUSTE FINAL DE USABILIDADE ================== */
-    :root{
-      --navy:#1f2937; --navy2:#374151; --ink:#111827; --muted:#6b7280; --bg:#f3f4f6; --card:#ffffff;
-      --line:#d1d5db; --green:#166534; --red:#991b1b; --gold:#4b5563; --blue:#1f2937;
-      --radius:14px; --shadow:0 8px 24px rgba(15,23,42,.08);
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      -webkit-tap-highlight-color:transparent;
     }
-    body{background:#f3f4f6}
-    .app,.app.menu-collapsed{display:block;min-height:100vh}
-    aside,.menu-toggle,.quick-audio{display:none!important}
-    main{max-width:1180px;margin:0 auto;padding:16px 14px 84px}
-    .topbar{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);align-items:flex-start;margin-bottom:12px}
-    .topbar h2{font-size:20px}.topbar p{font-size:12px}.actions{gap:8px}
-    .btn{background:#f3f4f6;color:#111827;border:1px solid #d1d5db;box-shadow:none;border-radius:10px;padding:10px 12px}
-    .btn.primary,.btn.green,.btn.blue,.btn.gold{background:#1f2937;color:#fff;border-color:#1f2937}
-    .btn.red{background:#fff;color:#991b1b;border-color:#fecaca}
-    .btn.recording{background:#991b1b;color:#fff;border-color:#991b1b}
-    .card{box-shadow:var(--shadow);border-radius:16px}.card h3{color:#1f2937}
-    .top-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 14px 0;position:sticky;top:0;z-index:80;background:#f3f4f6;padding:4px 0 8px}
-    .top-tabs .navbtn{background:#fff;color:#1f2937;border:1px solid #d1d5db;border-radius:12px;justify-content:center;text-align:center;padding:12px 8px;font-size:13px;box-shadow:0 4px 14px rgba(15,23,42,.06)}
-    .top-tabs .navbtn.active{background:#1f2937;color:#fff;border-color:#1f2937}
-    .data-table th,.pdf-bar{background:#1f2937}.totalbox.grand{background:#fff;border:2px solid #166534}.totalbox.grand b{color:#166534}
-    .main-audio-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-    .main-audio-actions .btn,.main-audio-actions label{justify-content:center;width:100%}
-    .secondary-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .danger-note,.ok-note{background:#f9fafb;border-color:#e5e7eb;color:#374151}
+
+    body{
+      font-family:Inter,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      padding-bottom:88px;
+      min-height:100vh;
+    }
+
+    button,input,select,textarea{
+      font-family:inherit;
+      font-size:16px;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    .app{
+      max-width:1180px;
+      margin:0 auto;
+      padding:14px;
+    }
+
+    .topbar{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      position:sticky;
+      top:8px;
+      z-index:30;
+    }
+
+    .brand h1{
+      font-size:18px;
+      font-weight:900;
+      color:var(--navy);
+      letter-spacing:-.02em;
+    }
+
+    .brand p{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:3px;
+    }
+
+    .status{
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    .section{
+      display:none;
+    }
+
+    .section.active{
+      display:block;
+    }
+
+    .section-title{
+      font-size:20px;
+      font-weight:900;
+      color:var(--navy);
+      margin:18px 4px 12px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:12px;
+    }
+
+    .col-12{grid-column:span 12}
+    .col-8{grid-column:span 8}
+    .col-6{grid-column:span 6}
+    .col-4{grid-column:span 4}
+    .col-3{grid-column:span 3}
+    .col-2{grid-column:span 2}
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      margin-bottom:12px;
+    }
+
+    .card h3{
+      font-size:15px;
+      font-weight:900;
+      color:var(--navy);
+      margin-bottom:12px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    label{
+      display:block;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      font-weight:900;
+      color:#374151;
+      margin-bottom:6px;
+    }
+
+    input,select,textarea{
+      width:100%;
+      border:1.5px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      color:var(--ink);
+      padding:11px;
+      font-weight:700;
+      outline:none;
+    }
+
+    textarea{
+      min-height:86px;
+      resize:vertical;
+      line-height:1.35;
+    }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--navy);
+      box-shadow:0 0 0 4px rgba(17,24,39,.08);
+    }
+
+    .btnrow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:0;
+      border-radius:12px;
+      padding:11px 13px;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      background:#e5e7eb;
+      color:#111827;
+      min-height:44px;
+    }
+
+    .btn.main{
+      background:var(--navy);
+      color:#fff;
+    }
+
+    .btn.ok{
+      background:var(--green);
+      color:#fff;
+    }
+
+    .btn.bad{
+      background:var(--red);
+      color:#fff;
+    }
+
+    .btn.line{
+      background:#fff;
+      border:1px solid var(--line);
+    }
+
+    .btn.small{
+      font-size:13px;
+      min-height:36px;
+      padding:8px 10px;
+    }
+
+    .btn.block{
+      width:100%;
+    }
+
+    .btn.recording{
+      background:var(--red);
+      color:#fff;
+      animation:pulse 1s infinite;
+    }
+
+    @keyframes pulse{
+      50%{box-shadow:0 0 0 10px rgba(153,27,27,.12)}
+    }
+
+    .bottomnav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      background:#fff;
+      border-top:1px solid var(--line);
+      box-shadow:0 -10px 30px rgba(15,23,42,.12);
+      z-index:60;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      padding:8px max(8px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-right));
+    }
+
+    .navbtn{
+      border:0;
+      background:transparent;
+      border-radius:12px;
+      color:#374151;
+      font-weight:900;
+      font-size:12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      align-items:center;
+      justify-content:center;
+      min-height:54px;
+    }
+
+    .navbtn i{
+      font-size:18px;
+    }
+
+    .navbtn.active{
+      background:var(--navy);
+      color:#fff;
+    }
+
+    .help{
+      background:#f9fafb;
+      border:1px dashed #9ca3af;
+      border-radius:14px;
+      padding:12px;
+      color:#4b5563;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .note{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .totals{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+
+    .totalbox{
+      background:var(--soft);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .totalbox span{
+      display:block;
+      font-size:11px;
+      color:var(--muted);
+      font-weight:900;
+      text-transform:uppercase;
+    }
+
+    .totalbox b{
+      display:block;
+      font-size:21px;
+      color:var(--navy);
+      margin-top:4px;
+    }
+
+    .totalbox.grand{
+      background:#ecfdf5;
+      border-color:#86efac;
+    }
+
+    .totalbox.grand b{
+      font-size:25px;
+      color:var(--green);
+    }
+
+    .item-card{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      padding:12px;
+      margin-bottom:10px;
+    }
+
+    .item-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .item-head b{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .item-total{
+      font-weight:900;
+      color:var(--green);
+    }
+
+    .item-grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:10px;
+    }
+
+    .pdfsheet{
+      background:#fff;
+      max-width:900px;
+      margin:0 auto;
+      border:1px solid #cbd5e1;
+      box-shadow:var(--shadow);
+      padding:24px;
+    }
+
+    .pdf-head{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      border-bottom:4px solid var(--navy);
+      padding-bottom:18px;
+      margin-bottom:22px;
+    }
+
+    .pdf-head h1{
+      font-size:18px;
+      letter-spacing:.08em;
+    }
+
+    .pdf-head p{
+      font-size:11px;
+      color:#334155;
+      line-height:1.5;
+    }
+
+    .pdf-title{
+      text-align:right;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.06em;
+      color:var(--navy);
+    }
+
+    .pdf-table{
+      width:100%;
+      border-collapse:collapse;
+      margin-bottom:20px;
+    }
+
+    .pdf-table td,.pdf-table th{
+      border:1px solid #cbd5e1;
+      padding:8px;
+      font-size:12px;
+      vertical-align:top;
+    }
+
+    .pdf-table th{
+      background:var(--navy);
+      color:#fff;
+    }
+
+    .pdf-bar{
+      background:var(--navy);
+      color:#fff;
+      font-weight:900;
+      padding:9px 10px;
+      font-size:12px;
+      text-transform:uppercase;
+      margin:14px 0 8px;
+    }
+
+    .right{
+      text-align:right;
+    }
+
+    .empty{
+      padding:16px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    .powered{
+      text-align:center;
+      color:#64748b;
+      font-size:12px;
+      font-weight:900;
+      margin:24px 0 4px;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:88px;
+      transform:translateX(-50%);
+      background:#111827;
+      color:#fff;
+      padding:13px 18px;
+      border-radius:999px;
+      box-shadow:var(--shadow);
+      font-weight:800;
+      z-index:100;
+      display:none;
+      max-width:92vw;
+      text-align:center;
+    }
+
+    .toast.show{
+      display:block;
+    }
+
+    .hidden{
+      display:none!important;
+    }
+
     @media(max-width:760px){
-      main{padding:10px 10px 88px}.topbar{display:block}.topbar .actions{display:grid;grid-template-columns:1fr 1fr;margin-top:10px}.topbar .actions .btn{width:100%;justify-content:center}
-      .top-tabs{position:fixed;left:0;right:0;bottom:0;top:auto;grid-template-columns:repeat(5,1fr);gap:0;background:#fff;border-top:1px solid #d1d5db;padding:5px;z-index:1300;box-shadow:0 -8px 20px rgba(15,23,42,.08)}
-      .top-tabs .navbtn{border:0;box-shadow:none;border-radius:10px;font-size:11px;padding:9px 4px;flex-direction:column;gap:4px}.top-tabs .navbtn i{font-size:15px}
-      .main-audio-actions{grid-template-columns:1fr}.card{padding:12px}.grid{gap:10px}.topbar h2{font-size:18px}.actions .btn{flex:unset}.data-table{min-width:720px}
+      body{padding-bottom:92px}
+      .app{padding:10px}
+      .topbar{top:0;border-radius:0;margin:-10px -10px 12px}
+      .brand h1{font-size:16px}
+      .status{display:none}
+      .col-8,.col-6,.col-4,.col-3,.col-2{grid-column:span 12}
+      .btnrow .btn{flex:1}
+      .totals{grid-template-columns:1fr 1fr}
+      .totalbox.grand{grid-column:span 2}
+      .item-grid .m12{grid-column:span 12!important}
+      .item-grid .m6{grid-column:span 6!important}
+      .item-grid .m4{grid-column:span 4!important}
+      .pdfsheet{min-width:760px;padding:14px}
+      .preview-box{overflow:auto;margin:0 -10px;padding:0 10px}
+      .bottomnav{gap:4px}
+      .navbtn{font-size:11px}
+      .navbtn i{font-size:17px}
+      input,select,textarea{font-size:16px}
+      .card{padding:12px}
+      .section-title{font-size:18px}
     }
 
+    @media(print){
+      .topbar,.bottomnav,.no-print{display:none!important}
+      body{padding:0;background:#fff}
+      .app{max-width:none;padding:0}
+      .card{box-shadow:none;border:0}
+      .pdfsheet{box-shadow:none;border:0;max-width:100%;padding:0}
+      .section{display:none!important}
+      .section.printme{display:block!important}
+    }
   </style>
 </head>
+
 <body>
-<button class="menu-toggle no-print" id="menuToggle" onclick="App.toggleMenu()"><i class="fa-solid fa-bars"></i><span class="txt">Menu</span></button>
-<button class="quick-audio no-print" onclick="App.goAudio()"><i class="fa-solid fa-microphone-lines"></i> Áudio direto</button>
-<div class="app" id="appShell">
-  <aside>
-    <div class="brandbar"><div class="brand"><h1><i class="fa-solid fa-file-invoice-dollar"></i> SOS Orçamentos IA</h1><p>Sistema de orçamento com PDF padrão oficina, voz, Groq, WhatsApp e salvamento local.</p></div><button class="close-menu" onclick="App.toggleMenu(true)"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="status-chip" id="saveStatus"><i class="fa-solid fa-circle-check"></i> Pronto</div>
-    <nav>
-      <button class="navbtn active" data-target="secDados"><i class="fa-solid fa-clipboard-list"></i> Dados do orçamento</button>
-      <button class="navbtn" data-target="secItens"><i class="fa-solid fa-screwdriver-wrench"></i> Peças e serviços</button>
-      <button class="navbtn" data-target="secAudio"><i class="fa-solid fa-microphone-lines"></i> Preencher por áudio</button>
-      <button class="navbtn" data-target="secPreview"><i class="fa-solid fa-file-pdf"></i> Preview PDF</button>
-      <button class="navbtn" data-target="secConfig"><i class="fa-solid fa-gear"></i> Configuração</button>
-    </nav>
-    <div class="sidebox"><b>Fluxo recomendado</b><p>1. Preencha cliente e veículo.<br>2. Grave ou digite peças/serviços.<br>3. Revise os valores.<br>4. Gere PDF e envie o resumo pelo WhatsApp.</p></div>
-    <div class="sidebox"><b>Aviso sobre chave API</b><p>Em GitHub Pages a chave do config.js fica exposta. Use limites na Groq e, em produção, proxy/backend.</p></div>
-  </aside>
-  <main>
+  <div class="app">
     <div class="topbar no-print">
-      <div><h2 id="screenTitle">Dados do orçamento</h2><p>Modelo visual baseado no PDF da S.O.S. Valêncio enviado como referência.</p></div>
-      <div class="actions">
-        <button class="btn" onclick="App.newBudget()"><i class="fa-solid fa-plus"></i> Novo</button>
-        <button class="btn red" onclick="App.clearBudget()"><i class="fa-solid fa-broom"></i> Limpar</button>
-        <button class="btn primary" onclick="App.saveLocal(true)"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
-        <button class="btn primary" onclick="App.show('secPreview','Preview do orçamento')"><i class="fa-solid fa-eye"></i> Preview</button>
-        <button class="btn primary" onclick="App.generatePDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+      <div class="brand">
+        <h1><i class="fa-solid fa-file-invoice-dollar"></i> SOS Orçamentos IA</h1>
+        <p>Áudio, edição manual, preview e PDF.</p>
       </div>
+      <div class="status" id="saveStatus">Pronto</div>
     </div>
 
-    <div class="top-tabs no-print">
-      <button class="navbtn" data-target="secAudio"><i class="fa-solid fa-microphone-lines"></i><span>Áudio</span></button>
-      <button class="navbtn" data-target="secItens"><i class="fa-solid fa-screwdriver-wrench"></i><span>Orçamento</span></button>
-      <button class="navbtn" data-target="secDados"><i class="fa-solid fa-clipboard-list"></i><span>Dados</span></button>
-      <button class="navbtn" data-target="secPreview"><i class="fa-solid fa-eye"></i><span>Preview</span></button>
-      <button class="navbtn" data-target="secConfig"><i class="fa-solid fa-gear"></i><span>Config</span></button>
-    </div>
+    <section id="secAudio" class="section active">
+      <h2 class="section-title">Preencher por áudio</h2>
 
-    <section id="secDados" class="section active">
       <div class="grid">
-        <div class="card col-12"><h3><i class="fa-solid fa-building"></i> Oficina</h3><div class="grid">
-          <div class="col-4"><label>Nome</label><input id="oficinaNome"></div><div class="col-3"><label>CNPJ</label><input id="oficinaCnpj"></div><div class="col-2"><label>Tel/Whats</label><input id="oficinaTelefone"></div><div class="col-3"><label>Email</label><input id="oficinaEmail"></div><div class="col-12"><label>Endereço</label><input id="oficinaEndereco"></div>
-        </div></div>
-        <div class="card col-12"><h3><i class="fa-solid fa-file-contract"></i> Cabeçalho do orçamento / ordem de serviço</h3><div class="grid">
-          <div class="col-3"><label>OS</label><input id="os" placeholder="Ex: KJYS9I"></div><div class="col-3"><label>Emissão</label><input id="emissao" type="date"></div><div class="col-3"><label>Status</label><input id="status"></div><div class="col-3"><label>Fiscal contrato</label><input id="fiscalContrato"></div>
-          <div class="col-6"><label>Cliente</label><input id="cliente"></div><div class="col-3"><label>CPF/CNPJ</label><input id="cpfCnpj"></div><div class="col-3"><label>Telefone</label><input id="telefone"></div>
-          <div class="col-4"><label>Veículo</label><input id="veiculo"></div><div class="col-2"><label>Placa</label><input id="placa"></div><div class="col-2"><label>Ano</label><input id="ano"></div><div class="col-2"><label>KM</label><input id="km"></div><div class="col-2"><label>Prefixo/Patrimônio</label><input id="prefixo"></div>
-          <div class="col-12"><label>Chassi</label><input id="chassi"></div>
-        </div></div>
-        <div class="card col-6"><h3><i class="fa-solid fa-comment-medical"></i> Defeito reclamado / queixa do cliente</h3><textarea id="defeito" placeholder="Digite ou preencha por áudio..."></textarea></div>
-        <div class="card col-6"><h3><i class="fa-solid fa-stethoscope"></i> Diagnóstico técnico</h3><textarea id="diagnostico" placeholder="Digite ou preencha por áudio..."></textarea></div>
+        <div class="card col-8">
+          <h3><i class="fa-solid fa-microphone-lines"></i> Áudio ou texto</h3>
+
+          <div class="btnrow">
+            <button id="recordBtn" class="btn main" onclick="App.Audio.toggle()">
+              <i class="fa-solid fa-microphone"></i> Gravar
+            </button>
+
+            <label class="btn line" for="audioFile">
+              <i class="fa-solid fa-upload"></i> Enviar áudio
+            </label>
+
+            <input id="audioFile" class="hidden" type="file" accept="audio/*" onchange="App.Audio.upload(this)">
+
+            <button class="btn ok" onclick="App.AI.processText()">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Aplicar
+            </button>
+          </div>
+
+          <label style="margin-top:14px">Texto transcrito editável</label>
+          <textarea id="audioText" style="min-height:170px" placeholder="A transcrição aparece aqui. Corrija palavras se precisar e toque em Aplicar."></textarea>
+
+          <div class="btnrow" style="margin-top:10px">
+            <button class="btn line" onclick="App.clearAudioText()">
+              <i class="fa-solid fa-eraser"></i> Limpar texto
+            </button>
+
+            <button class="btn line" onclick="App.show('secPreview')">
+              <i class="fa-solid fa-eye"></i> Pré-visualizar
+            </button>
+          </div>
+        </div>
+
+        <div class="card col-4">
+          <h3><i class="fa-solid fa-circle-info"></i> Como falar</h3>
+
+          <div class="help">
+            Exemplo simples:
+            <br><br>
+            <b>kit junta tampa de válvula 383, tampa de válvula usada 400, dois discos de freio 640, jogo de pastilha 293 e serviço 500.</b>
+            <br><br>
+            Se falar <b>dois discos 640</b>, o sistema entende total dos dois.
+            Se falar <b>640 cada</b>, soma por unidade.
+          </div>
+
+          <p class="note" style="margin-top:10px">
+            Você pode mandar vários áudios. Cada áudio novo adiciona ao orçamento, sem apagar o anterior.
+          </p>
+        </div>
+
+        <div class="card col-12">
+          <h3><i class="fa-solid fa-code"></i> Retorno da IA</h3>
+          <pre id="aiReturn" style="white-space:pre-wrap;font-size:12px;line-height:1.45;background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:12px;max-height:260px;overflow:auto">Aguardando áudio ou texto...</pre>
+        </div>
       </div>
     </section>
 
     <section id="secItens" class="section">
-      <div class="grid">
-        <div class="card col-12"><h3><i class="fa-solid fa-chart-pie"></i> Totais</h3><div class="totals"><div class="totalbox"><span>Serviços</span><b id="totalServicos">R$ 0,00</b></div><div class="totalbox"><span>Peças</span><b id="totalPecas">R$ 0,00</b></div><div class="totalbox"><span>Horas</span><b id="totalHoras">0,00 h</b></div><div class="totalbox grand"><span>Total geral</span><b id="totalGeral">R$ 0,00</b></div></div></div>
-        <div class="card col-12"><h3><i class="fa-solid fa-user-gear"></i> Serviços / mão de obra</h3><div class="actions" style="justify-content:flex-start;margin-bottom:12px"><button class="btn small primary" onclick="App.addService()"><i class="fa-solid fa-plus"></i> Serviço</button><button class="btn small" onclick="App.addQuickService()"><i class="fa-solid fa-bolt"></i> Serviço rápido</button></div><div class="tablewrap"><table class="data-table"><thead><tr><th>Cód.</th><th>Seção</th><th>Sistema / tipo veic.</th><th>Descrição do serviço</th><th>TMO</th><th>Valor h</th><th>Desc.</th><th>Valor</th><th></th></tr></thead><tbody id="servicesBody"></tbody></table></div></div>
-        <div class="card col-12"><h3><i class="fa-solid fa-gears"></i> Peças / materiais</h3><div class="actions" style="justify-content:flex-start;margin-bottom:12px"><button class="btn small primary" onclick="App.addPart()"><i class="fa-solid fa-plus"></i> Peça</button><button class="btn small" onclick="App.addQuickPart()"><i class="fa-solid fa-bolt"></i> Peça rápida</button></div><div class="tablewrap"><table class="data-table"><thead><tr><th>Cód.</th><th>Descrição da peça</th><th>Marca/Fornecedor</th><th>Qtd.</th><th>Valor un.</th><th>Desc.</th><th>Total</th><th></th></tr></thead><tbody id="partsBody"></tbody></table></div></div>
-      </div>
-    </section>
+      <h2 class="section-title">Orçamento</h2>
 
-    <section id="secAudio" class="section">
-      <div class="grid">
-        <div class="card col-8"><h3><i class="fa-solid fa-microphone-lines"></i> Preenchimento inteligente por áudio</h3>
-          <div class="main-audio-actions"><button id="recordBtn" class="btn primary" onclick="App.Audio.toggle()"><i class="fa-solid fa-microphone"></i> Gravar áudio</button><label class="btn" for="audioFile"><i class="fa-solid fa-upload"></i> Enviar áudio</label><input id="audioFile" class="hidden" type="file" accept="audio/*" onchange="App.Audio.upload(this)"><button class="btn primary" onclick="App.AI.processText()"><i class="fa-solid fa-wand-magic-sparkles"></i> Aplicar texto</button></div>
-          <div class="drop"><b>Como falar:</b><p class="muted">Ex.: “Kit junta tampa de válvula 383, tampa de válvula usada 400, dois discos de freio 640, jogo de pastilha 293 e serviço 500.”</p></div>
-          <label style="margin-top:14px">Texto transcrito / comando manual</label><textarea id="audioText" style="min-height:150px" placeholder="A transcrição aparecerá aqui. Você também pode colar ou digitar um comando e clicar em IA preencher orçamento."></textarea>
-          <label class="checkline"><input type="checkbox" id="aiAppendAudio" checked> Cada novo áudio ADICIONA ao orçamento atual</label>
-          <label class="checkline"><input type="checkbox" id="aiReplaceItems"> Reprocessar texto manual substituindo peças/serviços atuais</label>
-          <label class="checkline"><input type="checkbox" id="aiUppercase" checked> Padronizar cliente, veículo, peças e serviços em MAIÚSCULO</label>
-          <label class="checkline"><input type="checkbox" id="aiStrict"> Filtro ultra rígido: descartar item que a IA escreveu diferente do áudio</label>
-          <div class="secondary-tools"><button class="btn" onclick="App.clearItems()"><i class="fa-solid fa-eraser"></i> Limpar peças/serviços</button><button class="btn" onclick="App.show('secItens','Peças e serviços')"><i class="fa-solid fa-table"></i> Revisar itens</button><button class="btn" onclick="App.show('secPreview','Preview do orçamento')"><i class="fa-solid fa-eye"></i> Ver preview</button></div><div class="ok-note">Modo fiel: valores de serviço entram como total. Peças com quantidade usam valor total, exceto quando você disser “cada” ou “unitário”.</div>
+      <div class="card">
+        <h3><i class="fa-solid fa-calculator"></i> Totais</h3>
+
+        <div class="totals">
+          <div class="totalbox">
+            <span>Serviços</span>
+            <b id="totalServicos">R$ 0,00</b>
+          </div>
+
+          <div class="totalbox">
+            <span>Peças</span>
+            <b id="totalPecas">R$ 0,00</b>
+          </div>
+
+          <div class="totalbox">
+            <span>Horas</span>
+            <b id="totalHoras">0,00 h</b>
+          </div>
+
+          <div class="totalbox grand">
+            <span>Total geral</span>
+            <b id="totalGeral">R$ 0,00</b>
+          </div>
         </div>
-        <div class="card col-4"><h3><i class="fa-solid fa-list-check"></i> Retorno da IA</h3><div id="aiReturn" class="transcript">Aguardando áudio ou texto...</div><button class="btn primary" style="width:100%;justify-content:center;margin-top:12px" onclick="App.useExampleVoice()"><i class="fa-solid fa-vial"></i> Testar com exemplo</button></div>
-        <div class="card col-12"><h3><i class="fa-solid fa-circle-info"></i> Modelo de comando bom</h3><div class="transcript">Cliente 52 BPM Polícia Militar, CNPJ 04.198.514/0071-67, veículo Renault Duster placa FBO3E02, ano 2020, km 241601. Defeito reclamado checklist completo para diagnóstico. Diagnóstico técnico bateria fraca e bicos sujos. Adicionar serviço mecânica substituir bateria, TMO 0,30, valor hora 152,25, desconto 29. Adicionar serviço injeção limpar bicos injetores, TMO 1,50, valor hora 166,36, desconto 29. Adicionar peça bateria 60 amperes, quantidade 1, valor 420 reais.</div></div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fa-solid fa-gears"></i> Peças / materiais</h3>
+
+        <div class="btnrow" style="margin-bottom:12px">
+          <button class="btn main" onclick="App.addPart()">
+            <i class="fa-solid fa-plus"></i> Peça
+          </button>
+
+          <button class="btn line" onclick="App.addQuickPart()">
+            <i class="fa-solid fa-bolt"></i> Peça rápida
+          </button>
+        </div>
+
+        <div id="partsList"></div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fa-solid fa-screwdriver-wrench"></i> Serviços / mão de obra</h3>
+
+        <div class="btnrow" style="margin-bottom:12px">
+          <button class="btn main" onclick="App.addService()">
+            <i class="fa-solid fa-plus"></i> Serviço
+          </button>
+
+          <button class="btn line" onclick="App.addQuickService()">
+            <i class="fa-solid fa-bolt"></i> Serviço rápido
+          </button>
+        </div>
+
+        <div id="servicesList"></div>
       </div>
     </section>
 
-    <section id="secPreview" class="section">
-      <div class="card"><h3><i class="fa-solid fa-eye"></i> Preview visual</h3><div class="actions no-print" style="justify-content:flex-start;margin-bottom:14px"><button class="btn green" onclick="App.generatePDF()"><i class="fa-solid fa-download"></i> Baixar PDF</button><button class="btn" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir tela</button><button class="btn blue" onclick="App.sharePDF()"><i class="fa-solid fa-share-nodes"></i> Compartilhar PDF</button><button class="btn primary" onclick="App.openWhatsApp()"><i class="fa-brands fa-whatsapp"></i> Enviar resumo</button></div><div id="preview"></div></div>
+    <section id="secDados" class="section">
+      <h2 class="section-title">Dados do orçamento</h2>
+
+      <div class="grid">
+        <div class="card col-12">
+          <h3><i class="fa-solid fa-building"></i> Oficina</h3>
+
+          <div class="grid">
+            <div class="col-4">
+              <label>Nome</label>
+              <input id="oficinaNome">
+            </div>
+
+            <div class="col-3">
+              <label>CNPJ</label>
+              <input id="oficinaCnpj">
+            </div>
+
+            <div class="col-2">
+              <label>Tel/Whats</label>
+              <input id="oficinaTelefone">
+            </div>
+
+            <div class="col-3">
+              <label>Email</label>
+              <input id="oficinaEmail">
+            </div>
+
+            <div class="col-12">
+              <label>Endereço</label>
+              <input id="oficinaEndereco">
+            </div>
+          </div>
+        </div>
+
+        <div class="card col-12">
+          <h3><i class="fa-solid fa-file-contract"></i> Cabeçalho</h3>
+
+          <div class="grid">
+            <div class="col-3">
+              <label>OS</label>
+              <input id="os">
+            </div>
+
+            <div class="col-3">
+              <label>Emissão</label>
+              <input id="emissao" type="date">
+            </div>
+
+            <div class="col-3">
+              <label>Status</label>
+              <input id="status">
+            </div>
+
+            <div class="col-3">
+              <label>Fiscal contrato</label>
+              <input id="fiscalContrato">
+            </div>
+
+            <div class="col-6">
+              <label>Cliente</label>
+              <input id="cliente">
+            </div>
+
+            <div class="col-3">
+              <label>CPF/CNPJ</label>
+              <input id="cpfCnpj">
+            </div>
+
+            <div class="col-3">
+              <label>Telefone</label>
+              <input id="telefone">
+            </div>
+
+            <div class="col-4">
+              <label>Veículo</label>
+              <input id="veiculo">
+            </div>
+
+            <div class="col-2">
+              <label>Placa</label>
+              <input id="placa">
+            </div>
+
+            <div class="col-2">
+              <label>Ano</label>
+              <input id="ano">
+            </div>
+
+            <div class="col-2">
+              <label>KM</label>
+              <input id="km">
+            </div>
+
+            <div class="col-2">
+              <label>Prefixo/Patrimônio</label>
+              <input id="prefixo">
+            </div>
+
+            <div class="col-12">
+              <label>Chassi</label>
+              <input id="chassi">
+            </div>
+          </div>
+        </div>
+
+        <div class="card col-6">
+          <h3><i class="fa-solid fa-comment-medical"></i> Defeito reclamado</h3>
+          <textarea id="defeito"></textarea>
+        </div>
+
+        <div class="card col-6">
+          <h3><i class="fa-solid fa-stethoscope"></i> Diagnóstico técnico</h3>
+          <textarea id="diagnostico"></textarea>
+        </div>
+      </div>
+    </section>
+<section id="secPreview" class="section">
+      <h2 class="section-title">Preview do orçamento</h2>
+
+      <div class="card no-print">
+        <h3><i class="fa-solid fa-eye"></i> Conferência antes de gerar</h3>
+
+        <div class="btnrow">
+          <button class="btn main" onclick="App.renderPreview()">
+            <i class="fa-solid fa-rotate"></i> Atualizar preview
+          </button>
+
+          <button class="btn ok" onclick="App.generatePDF()">
+            <i class="fa-solid fa-file-pdf"></i> Gerar PDF
+          </button>
+
+          <button class="btn line" onclick="App.sharePDF()">
+            <i class="fa-solid fa-share-nodes"></i> Compartilhar PDF
+          </button>
+
+          <button class="btn line" onclick="App.openWhatsApp()">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+          </button>
+        </div>
+
+        <p class="note" style="margin-top:10px">
+          Confira o orçamento abaixo. No celular, arraste para o lado se precisar ver a folha inteira.
+        </p>
+      </div>
+
+      <div class="preview-box">
+        <div id="preview"></div>
+      </div>
     </section>
 
     <section id="secConfig" class="section">
+      <h2 class="section-title">Configuração</h2>
+
       <div class="grid">
-        <div class="card col-6 config-panel" id="cfgPanelApi">
-          <div class="card-title-row"><h3><i class="fa-solid fa-key"></i> Chaves e modelos</h3><div class="config-tools"><button class="btn small" onclick="App.toggleConfigPanel('cfgPanelApi')"><i class="fa-solid fa-minus"></i> Minimizar</button><button class="btn small primary" onclick="App.maximizeConfigPanel('cfgPanelApi')"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Maximizar</button></div></div>
-          <div class="config-body"><label>Groq API Key</label><input id="cfgKey" type="password"><label style="margin-top:12px">Modelo transcrição</label><input id="cfgTranscription"><label style="margin-top:12px">Modelo IA texto</label><input id="cfgChat"><button class="btn green" style="margin-top:14px" onclick="App.saveConfigRuntime()"><i class="fa-solid fa-save"></i> Usar nesta sessão</button><div class="danger-note">Para fixar de verdade, edite o arquivo config.js no GitHub.</div></div>
+        <div class="card col-6">
+          <h3><i class="fa-solid fa-key"></i> Groq</h3>
+
+          <label>Groq API Key</label>
+          <input id="cfgKey" type="password" placeholder="gsk_...">
+
+          <label style="margin-top:12px">Modelo de transcrição</label>
+          <input id="cfgTranscription" placeholder="whisper-large-v3-turbo">
+
+          <label style="margin-top:12px">Modelo IA texto</label>
+          <input id="cfgChat" placeholder="openai/gpt-oss-20b">
+
+          <button class="btn main block" style="margin-top:12px" onclick="App.saveConfigRuntime()">
+            <i class="fa-solid fa-save"></i> Usar nesta sessão
+          </button>
+
+          <p class="note" style="margin-top:10px">
+            Para deixar fixo, altere o arquivo <b>config.js</b> no GitHub.
+          </p>
         </div>
-        <div class="card col-6 config-panel" id="cfgPanelBackup">
-          <div class="card-title-row"><h3><i class="fa-solid fa-database"></i> Backup e limpeza</h3><div class="config-tools"><button class="btn small" onclick="App.toggleConfigPanel('cfgPanelBackup')"><i class="fa-solid fa-minus"></i> Minimizar</button><button class="btn small primary" onclick="App.maximizeConfigPanel('cfgPanelBackup')"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Maximizar</button></div></div>
-          <div class="config-body"><div class="compact-row"><button class="btn blue" onclick="App.exportJSON()"><i class="fa-solid fa-file-export"></i> Exportar orçamento JSON</button><label class="btn" for="jsonImport"><i class="fa-solid fa-file-import"></i> Importar JSON</label><input id="jsonImport" class="hidden" type="file" accept="application/json" onchange="App.importJSON(this)"><button class="btn" onclick="App.clearItems()"><i class="fa-solid fa-eraser"></i> Limpar peças/serviços</button><button class="btn red" onclick="App.clearBudget()"><i class="fa-solid fa-broom"></i> Limpar orçamento inteiro</button><button class="btn red" onclick="App.clearLocal()"><i class="fa-solid fa-trash"></i> Limpar dados locais</button></div><div class="ok-note">Agora existe limpeza real: peças/serviços, orçamento inteiro ou apenas o backup local do navegador.</div></div>
-        </div>
-        <div class="card col-12 config-panel" id="cfgPanelUi">
-          <div class="card-title-row"><h3><i class="fa-solid fa-mobile-screen-button"></i> Usabilidade celular / tela inicial</h3><div class="config-tools"><button class="btn small" onclick="App.toggleConfigPanel('cfgPanelUi')"><i class="fa-solid fa-minus"></i> Minimizar</button><button class="btn small primary" onclick="App.maximizeConfigPanel('cfgPanelUi')"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Maximizar</button></div></div>
-          <div class="config-body"><label class="checkline"><input type="checkbox" id="cfgMenuCollapsed" checked onchange="App.saveUiPrefs()"> Abrir com menu lateral escondido</label><label style="margin-top:12px">Tela inicial</label><select id="cfgStartSection" onchange="App.saveUiPrefs()"><option value="secAudio">Preencher por áudio</option><option value="secDados">Dados do orçamento</option><option value="secItens">Peças e serviços</option><option value="secPreview">Preview PDF</option></select><div class="ok-note">Para uso no celular: deixe o menu escondido e use o botão verde “Áudio direto”.</div></div>
+
+        <div class="card col-6">
+          <h3><i class="fa-solid fa-broom"></i> Limpeza e backup</h3>
+
+          <div class="btnrow">
+            <button class="btn line" onclick="App.exportJSON()">
+              <i class="fa-solid fa-file-export"></i> Exportar JSON
+            </button>
+
+            <label class="btn line" for="jsonImport">
+              <i class="fa-solid fa-file-import"></i> Importar JSON
+            </label>
+
+            <input id="jsonImport" class="hidden" type="file" accept="application/json" onchange="App.importJSON(this)">
+
+            <button class="btn line" onclick="App.clearItems()">
+              <i class="fa-solid fa-eraser"></i> Limpar peças/serviços
+            </button>
+
+            <button class="btn bad" onclick="App.clearBudget()">
+              <i class="fa-solid fa-trash"></i> Limpar orçamento
+            </button>
+
+            <button class="btn bad" onclick="App.clearLocal()">
+              <i class="fa-solid fa-database"></i> Limpar dados locais
+            </button>
+          </div>
+
+          <p class="note" style="margin-top:10px">
+            Use “Limpar dados locais” quando subir uma nova versão e o navegador continuar carregando orçamento antigo.
+          </p>
         </div>
       </div>
     </section>
+
     <div class="powered" id="powered"></div>
-  </main>
-</div>
-<div id="toast" class="toast"></div>
+  </div>
 
-<script>
-const App = {
-  state:{services:[],parts:[],lastPdfBlob:null},
-  ids:['oficinaNome','oficinaCnpj','oficinaTelefone','oficinaEmail','oficinaEndereco','os','emissao','status','fiscalContrato','cliente','cpfCnpj','telefone','veiculo','placa','ano','km','prefixo','chassi','defeito','diagnostico'],
-  money(v){return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});},
-  num(v){
-    if(typeof v==='number')return Number.isFinite(v)?v:0;
-    let x=String(v??'').trim().replace(/[^\d,.-]/g,'');
-    if(!x)return 0;
-    const comma=x.lastIndexOf(','), dot=x.lastIndexOf('.');
-    if(comma>-1&&dot>-1)x=comma>dot?x.replace(/\./g,'').replace(',','.'):x.replace(/,/g,'');
-    else if(comma>-1)x=x.replace(',','.');
-    else if(dot>-1){
-      const parts=x.split('.');
-      if(parts.length>2||parts[parts.length-1].length===3)x=x.replace(/\./g,'');
-    }
-    return Number(x)||0;
-  },
-  today(){return new Date().toISOString().slice(0,10);},
-  osCode(){return Math.random().toString(36).slice(2,8).toUpperCase();},
-  toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);},
-  init(){
-    const cfg=window.SOS_CONFIG||{};const office=cfg.OFFICE||{};this.$('oficinaNome').value=office.nome||'';this.$('oficinaCnpj').value=office.cnpj||'';this.$('oficinaTelefone').value=office.telefone||'';this.$('oficinaEmail').value=office.email||'';this.$('oficinaEndereco').value=office.endereco||'';this.$('status').value=(cfg.PDF&&cfg.PDF.statusPadrao)||'Orçamento_Enviado';this.$('emissao').value=this.today();this.$('os').value=this.osCode();this.$('powered').textContent=(cfg.BRAND&&cfg.BRAND.assinatura)||'Powered by thIAguinho Soluções Digitais';
-    this.$('cfgKey').value=cfg.GROQ_API_KEY||'';this.$('cfgTranscription').value=cfg.GROQ_TRANSCRIPTION_MODEL||'whisper-large-v3-turbo';this.$('cfgChat').value=cfg.GROQ_CHAT_MODEL||'openai/gpt-oss-20b';
-    let savedUi={};try{savedUi=JSON.parse(localStorage.getItem('sos_ui_prefs')||'{}')||{};if(savedUi.version!==2)savedUi={};}catch(e){savedUi={};}
-    const ui=Object.assign({menuCollapsedDefault:true,startSection:'secAudio'},cfg.UI||{},savedUi);
-    if(this.$('cfgMenuCollapsed'))this.$('cfgMenuCollapsed').checked=!!ui.menuCollapsedDefault;if(this.$('cfgStartSection'))this.$('cfgStartSection').value=ui.startSection||'secAudio';
-    document.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click',()=>{this.show(b.dataset.target,b.textContent.trim());if(window.innerWidth<980)this.toggleMenu(true)}));
-    document.querySelectorAll('input,textarea,select').forEach(el=>el.addEventListener('input',()=>this.scheduleSave()));
-    this.loadLocal();this.renderAll();if(ui.menuCollapsedDefault)this.toggleMenu(true);this.show(ui.startSection||'secAudio', this.titleFor(ui.startSection||'secAudio'));
-  },
-  $(id){return document.getElementById(id)},
-  titleFor(id){return ({secDados:'Dados do orçamento',secItens:'Peças e serviços',secAudio:'Preencher por áudio',secPreview:'Preview PDF',secConfig:'Configuração'})[id]||'Orçamento'},
-  toggleMenu(forceHide){const app=this.$('appShell');if(!app)return;if(forceHide===true)app.classList.add('menu-collapsed');else app.classList.toggle('menu-collapsed');},
-  goAudio(){this.show('secAudio','Preencher por áudio');this.toggleMenu(true);setTimeout(()=>{const b=this.$('recordBtn');if(b)b.scrollIntoView({behavior:'smooth',block:'center'});},100)},
-  saveUiPrefs(){const prefs={version:2,menuCollapsedDefault:!!(this.$('cfgMenuCollapsed')&&this.$('cfgMenuCollapsed').checked),startSection:(this.$('cfgStartSection')&&this.$('cfgStartSection').value)||'secAudio'};localStorage.setItem('sos_ui_prefs',JSON.stringify(prefs));if(prefs.menuCollapsedDefault)this.toggleMenu(true);this.toast('Preferência de tela salva.')},
-  show(id,title){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));if(!this.$(id))id='secAudio';this.$(id).classList.add('active');document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.target===id));this.$('screenTitle').textContent=title||this.titleFor(id);if(id==='secPreview')this.renderPreview();},
-  collect(){const d={};this.ids.forEach(id=>d[id]=this.$(id).value);d.services=this.state.services;d.parts=this.state.parts;return d;},
-  apply(d){if(!d)return;this.ids.forEach(id=>{if(d[id]!==undefined)this.$(id).value=d[id]});this.state.services=d.services||[];this.state.parts=d.parts||[];this.renderAll();},
-  scheduleSave(){clearTimeout(this._saveTimer);this._saveTimer=setTimeout(()=>this.saveLocal(false),500);this.updateTotals();},
-  saveLocal(manual){localStorage.setItem('sos_orcamento_atual',JSON.stringify(this.collect()));this.$('saveStatus').innerHTML='<i class="fa-solid fa-circle-check"></i> Salvo local';if(manual)this.toast('Orçamento salvo no navegador.');},
-  loadLocal(){const raw=localStorage.getItem('sos_orcamento_atual');if(raw){try{const d=JSON.parse(raw);this.apply(d);this.toast('Orçamento local carregado.')}catch(e){}}},
-  clearLocal(){if(confirm('Limpar orçamento salvo neste navegador?')){localStorage.removeItem('sos_orcamento_atual');this.toast('Dados locais limpos.')}},
-  resetBudgetFields(keepOffice=true){const office={oficinaNome:this.$('oficinaNome').value,oficinaCnpj:this.$('oficinaCnpj').value,oficinaTelefone:this.$('oficinaTelefone').value,oficinaEmail:this.$('oficinaEmail').value,oficinaEndereco:this.$('oficinaEndereco').value};this.ids.forEach(id=>this.$(id).value='');if(keepOffice)Object.entries(office).forEach(([k,v])=>this.$(k).value=v);this.$('emissao').value=this.today();this.$('os').value=this.osCode();this.$('status').value=(window.SOS_CONFIG.PDF&&window.SOS_CONFIG.PDF.statusPadrao)||'Orçamento_Enviado';this.state.services=[];this.state.parts=[];this.state.lastPdfBlob=null;this.$('audioText')&&(this.$('audioText').value='');this.$('aiReturn')&&(this.$('aiReturn').textContent='Aguardando áudio ou texto...');this.renderAll();},
-  clearBudget(){if(!confirm('Limpar TODO o orçamento da tela e começar em branco?'))return;this.resetBudgetFields(true);this.saveLocal(true);this.toast('Orçamento limpo.');},
-  clearItems(){if(!confirm('Limpar todas as peças e serviços lançados?'))return;this.state.services=[];this.state.parts=[];this.renderAll();this.saveLocal(true);this.toast('Peças e serviços limpos.');},
-  newBudget(){if(!confirm('Criar orçamento novo? O orçamento atual será substituído na tela.'))return;this.resetBudgetFields(true);this.saveLocal(true);},
-  normText(v,upper=true){let x=String(v||'').replace(/\s+/g,' ').trim();return upper?x.toUpperCase():x;},
-  serviceKey(s){return this.normText((s.secao||'')+'|'+(s.descricao||''),true);},
-partKey(p){
-  const normal = (txt) => this.normText(txt||'',true)
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/\b(DE|DA|DO|DAS|DOS|A|O|AS|OS|E|EM|NA|NO|NAS|NOS|AOS|AO)\b/g,' ')
-    .replace(/\bJUNTOS\b/g,'JUNTO')
-    .replace(/\bTAMPAS\b/g,'TAMPA')
-    .replace(/\bVALVULAS\b/g,'VALVULA')
-    .replace(/\bDISCOS\b/g,'DISCO')
-    .replace(/\bPASTILHAS\b/g,'PASTILHA')
-    .replace(/\bUSADAS\b/g,'USADA')
-    .replace(/\bFREIOS\b/g,'FREIO')
-    .replace(/\s+/g,' ')
-    .trim();
+  <nav class="bottomnav no-print">
+    <button class="navbtn active" data-target="secAudio" onclick="App.show('secAudio')">
+      <i class="fa-solid fa-microphone-lines"></i>
+      Áudio
+    </button>
 
-  return normal(p.descricao||'')+'|'+normal(p.fornecedor||'');
-},
-  addService(s={}){const upper=!(this.$('aiUppercase')&&!this.$('aiUppercase').checked);let tmo=this.num(s.tmo)||0;let valorHora=this.num(s.valorHora??s.valor_hora??s.valorUnit??0)||0;let valorTotal=this.num(s.valorTotal??s.valor_total??s.total??s.valor??0)||0;if(tmo<=0&&valorHora>0)tmo=1;let descricao=this.normText(s.descricao||'',upper);if(!descricao&&valorTotal>0)descricao='SERVIÇO';const obj={cod:this.normText(s.cod||'',true),secao:this.normText(s.secao||'MECANICA',true),sistema:this.normText(s.sistema||'MECANICA E ELETRICA GERAL EM VEICULOS PEQUENOS E MEDIOS\nTipo: CARRO',upper),descricao,tmo,valorHora,valorTotal,desc:this.num(s.desc)||0};if(!obj.descricao)return;const k=this.serviceKey(obj);const old=this.state.services.find(x=>this.serviceKey(x)===k);if(old){if(obj.cod)old.cod=obj.cod;if(obj.sistema)old.sistema=obj.sistema;if(obj.tmo>0)old.tmo=obj.tmo;if(obj.valorHora>0){old.valorHora=obj.valorHora;old.valorTotal=0;}if(obj.valorTotal>0)old.valorTotal=obj.valorTotal;if(obj.desc>0)old.desc=obj.desc;this.renderServices();this.updateTotals();this.saveLocal(false);return;}this.state.services.push(obj);this.renderServices();this.updateTotals();this.saveLocal(false);},
-  addQuickService(){this.addService({descricao:'NOVO SERVIÇO',tmo:1,valorHora:120,desc:0});},
-  removeService(i){this.state.services.splice(i,1);this.renderAll();this.saveLocal(false);},
-  addPart(p={}){const upper=!(this.$('aiUppercase')&&!this.$('aiUppercase').checked);const obj={cod:this.normText(p.cod||'',true),descricao:this.normText(p.descricao||'',upper),fornecedor:this.normText(p.fornecedor||'',upper),qtd:this.num(p.qtd)||1,valorUnit:this.num(p.valorUnit??p.valor_unitario??p.valor??0)||0,desc:this.num(p.desc)||0};if(!obj.descricao)return;const k=this.partKey(obj);const old=this.state.parts.find(x=>this.partKey(x)===k);if(old){if(obj.cod)old.cod=obj.cod;if(obj.fornecedor)old.fornecedor=obj.fornecedor;if(obj.qtd>0)old.qtd=obj.qtd;if(obj.valorUnit>0)old.valorUnit=obj.valorUnit;if(obj.desc>0)old.desc=obj.desc;this.renderParts();this.updateTotals();this.saveLocal(false);return;}this.state.parts.push(obj);this.renderParts();this.updateTotals();this.saveLocal(false);},
-  addQuickPart(){this.addPart({descricao:'NOVA PEÇA',qtd:1,valorUnit:0,desc:0});},
-  removePart(i){this.state.parts.splice(i,1);this.renderAll();this.saveLocal(false);},
-  serviceTotal(s){const direct=this.num(s.valorTotal??s.valor_total??0);if(direct>0)return direct*(1-this.num(s.desc)/100);const t=this.num(s.tmo);const vh=this.num(s.valorHora);return (t>0?t:vh>0?1:0)*vh*(1-this.num(s.desc)/100)},
-  partTotal(p){return this.num(p.qtd)*this.num(p.valorUnit)*(1-this.num(p.desc)/100)},
-  renderServices(){const body=this.$('servicesBody');body.innerHTML='';if(!this.state.services.length){body.innerHTML='<tr><td colspan="9" class="empty">Nenhum serviço lançado.</td></tr>';return;}this.state.services.forEach((s,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td><input value="${this.esc(s.cod)}" oninput="App.state.services[${i}].cod=this.value;App.scheduleSave()"></td><td><select onchange="App.state.services[${i}].secao=this.value;App.scheduleSave()">${['SEM SELECAO / MANUAL','MECANICA','TAPECARIA / CAPOTARIA','FUNILARIA / PINTURA','LAVAGEM / HIGIENIZACAO','BORRACHARIA','INJECAO / ALIMENTACAO','ELETRICA','CAMBIO'].map(x=>`<option ${s.secao===x?'selected':''}>${x}</option>`).join('')}</select></td><td><textarea oninput="App.state.services[${i}].sistema=this.value;App.scheduleSave()">${this.esc(s.sistema)}</textarea></td><td><textarea oninput="App.state.services[${i}].descricao=this.value;App.scheduleSave()">${this.esc(s.descricao)}</textarea></td><td><input value="${s.tmo}" oninput="App.state.services[${i}].tmo=App.num(this.value);App.state.services[${i}].valorTotal=0;App.scheduleSave()"></td><td><input value="${s.valorHora}" oninput="App.state.services[${i}].valorHora=App.num(this.value);App.state.services[${i}].valorTotal=0;App.scheduleSave()"></td><td><input value="${s.desc}" oninput="App.state.services[${i}].desc=App.num(this.value);App.scheduleSave()"></td><td class="right"><b>${this.money(this.serviceTotal(s))}</b></td><td><button class="btn small red" onclick="App.removeService(${i})"><i class="fa-solid fa-trash"></i></button></td>`;body.appendChild(tr);});},
-  renderParts(){const body=this.$('partsBody');body.innerHTML='';if(!this.state.parts.length){body.innerHTML='<tr><td colspan="8" class="empty">Nenhuma peça lançada.</td></tr>';return;}this.state.parts.forEach((p,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td><input value="${this.esc(p.cod)}" oninput="App.state.parts[${i}].cod=this.value;App.scheduleSave()"></td><td><textarea oninput="App.state.parts[${i}].descricao=this.value;App.scheduleSave()">${this.esc(p.descricao)}</textarea></td><td><input value="${this.esc(p.fornecedor)}" oninput="App.state.parts[${i}].fornecedor=this.value;App.scheduleSave()"></td><td><input value="${p.qtd}" oninput="App.state.parts[${i}].qtd=App.num(this.value);App.scheduleSave()"></td><td><input value="${p.valorUnit}" oninput="App.state.parts[${i}].valorUnit=App.num(this.value);App.scheduleSave()"></td><td><input value="${p.desc}" oninput="App.state.parts[${i}].desc=App.num(this.value);App.scheduleSave()"></td><td class="right"><b>${this.money(this.partTotal(p))}</b></td><td><button class="btn small red" onclick="App.removePart(${i})"><i class="fa-solid fa-trash"></i></button></td>`;body.appendChild(tr);});},
-  esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));},
-  renderAll(){this.renderServices();this.renderParts();this.updateTotals();this.renderPreview();},
-  totals(){const serv=this.state.services.reduce((a,s)=>a+this.serviceTotal(s),0);const pec=this.state.parts.reduce((a,p)=>a+this.partTotal(p),0);const hrs=this.state.services.reduce((a,s)=>a+this.num(s.tmo),0);return{serv,pec,hrs,total:serv+pec};},
-  updateTotals(){const t=this.totals();this.$('totalServicos').textContent=this.money(t.serv);this.$('totalPecas').textContent=this.money(t.pec);this.$('totalHoras').textContent=t.hrs.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' h';this.$('totalGeral').textContent=this.money(t.total);},
-  resumoSecoes(){const map={};this.state.services.forEach(s=>{const k=s.secao||'SEM SELECAO / MANUAL';if(!map[k])map[k]={cod:[],tipo:[],horas:0,valor:0};if(s.cod)map[k].cod.push(s.cod);if(s.sistema)map[k].tipo.push(String(s.sistema).split('\n')[0]);map[k].horas+=this.num(s.tmo);map[k].valor+=this.serviceTotal(s);});return Object.entries(map).map(([sec,v])=>({sec,cod:[...new Set(v.cod)].slice(0,6).join(', ')||'-',tipo:[...new Set(v.tipo)].slice(0,2).join(' / ')||'-',horas:v.horas,valor:v.valor}));},
-  renderPreview(){const d=this.collect(),t=this.totals(),res=this.resumoSecoes();const services=this.state.services.map(s=>`<tr><td>${this.esc(s.cod||'-')}</td><td>${this.esc(s.sistema)}</td><td>${this.esc(s.descricao)}</td><td>${this.num(s.tmo).toFixed(2)}</td><td>${this.money(s.valorHora)}</td><td>${this.num(s.desc).toFixed(1)}%</td><td class="right">${this.money(this.serviceTotal(s))}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">Sem serviços.</td></tr>';const parts=this.state.parts.map(p=>`<tr><td>${this.esc(p.cod||'-')}</td><td>${this.esc(p.descricao)}</td><td>${this.esc(p.fornecedor)}</td><td>${this.num(p.qtd).toFixed(2)}</td><td>${this.money(p.valorUnit)}</td><td>${this.num(p.desc).toFixed(1)}%</td><td class="right">${this.money(this.partTotal(p))}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">Sem peças.</td></tr>';const resumo=res.map(r=>`<tr><td>${this.esc(r.sec)}</td><td>${this.esc(r.cod)}</td><td>${this.esc(r.tipo)}</td><td>${r.horas.toFixed(2)}</td><td class="right">${this.money(r.valor)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">Sem mão de obra.</td></tr>';this.$('preview').innerHTML=`<div class="pdfsheet"><div class="pdf-head"><div><h1>${this.esc(d.oficinaNome)}</h1><p>CNPJ: ${this.esc(d.oficinaCnpj)} | Tel/Whats: ${this.esc(d.oficinaTelefone)}<br>${this.esc(d.oficinaEndereco)}<br>${this.esc(d.oficinaEmail)}</p></div><div class="pdf-title">ORÇAMENTO / ORDEM DE SERVIÇO</div></div><table class="pdf-table"><tr><td><b>OS</b></td><td>${this.esc(d.os)}</td><td><b>Emissão</b></td><td>${this.brDate(d.emissao)}</td></tr><tr><td><b>Cliente</b></td><td>${this.esc(d.cliente)}</td><td><b>CPF/CNPJ</b></td><td>${this.esc(d.cpfCnpj)}</td></tr><tr><td><b>Telefone</b></td><td>${this.esc(d.telefone)}</td><td><b>Status</b></td><td>${this.esc(d.status)}</td></tr><tr><td><b>Veículo</b></td><td>${this.esc(d.veiculo)}</td><td><b>Placa</b></td><td>${this.esc(d.placa)}</td></tr><tr><td><b>Ano</b></td><td>${this.esc(d.ano)}</td><td><b>KM</b></td><td>${this.esc(d.km)}</td></tr><tr><td><b>Chassi</b></td><td>${this.esc(d.chassi)}</td><td><b>Prefixo/Patrimônio</b></td><td>${this.esc(d.prefixo)}</td></tr><tr><td><b>Fiscal Contrato</b></td><td colspan="3">${this.esc(d.fiscalContrato)}</td></tr></table><div class="pdf-bar">Defeito reclamado / queixa do cliente</div><table class="pdf-table"><tr><td>${this.nl(d.defeito||'-')}</td></tr></table><div class="pdf-bar">Diagnóstico técnico</div><table class="pdf-table"><tr><td>${this.nl(d.diagnostico||'-')}</td></tr></table><div class="pdf-bar">Resumo por seção de mão de obra</div><table class="pdf-table"><tr><th>Seção</th><th>Códigos</th><th>Tipo veículo / sistema</th><th>Horas</th><th>Valor</th></tr>${resumo}</table><div class="pdf-bar">Serviços / mão de obra</div><table class="pdf-table"><tr><th>Cód.</th><th>Sistema / tipo veic.</th><th>Descrição do serviço</th><th>TMO</th><th>Valor h</th><th>Desc.</th><th>Valor</th></tr>${services}</table><div class="pdf-bar">Peças / materiais</div><table class="pdf-table"><tr><th>Cód.</th><th>Descrição</th><th>Marca/Fornecedor</th><th>Qtd.</th><th>Valor un.</th><th>Desc.</th><th>Total</th></tr>${parts}</table><table class="pdf-table"><tr><td><b>Total serviços</b></td><td class="right">${this.money(t.serv)}</td></tr><tr><td><b>Total peças</b></td><td class="right">${this.money(t.pec)}</td></tr><tr><td><b>TOTAL GERAL</b></td><td class="right"><b>${this.money(t.total)}</b></td></tr></table><p style="text-align:center;color:#64748b;font-size:11px;font-weight:900;margin-top:20px">${this.esc((window.SOS_CONFIG.BRAND&&window.SOS_CONFIG.BRAND.assinatura)||'Powered by thIAguinho Soluções Digitais')}</p></div>`;},
-  nl(v){return this.esc(v).replace(/\n/g,'<br>')},brDate(v){if(!v)return'';const [y,m,d]=v.split('-');return `${d}/${m}/${y}`},
-  generatePDF(){const {jsPDF}=window.jspdf;const d=this.collect(),doc=new jsPDF('p','mm','a4');const navy=[19,32,51];let y=14;doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text((d.oficinaNome||'S.O.S. VALÊNCIO').toUpperCase(),14,y);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.text(`CNPJ: ${d.oficinaCnpj||''} | Tel/Whats: ${d.oficinaTelefone||''}`,14,y+5);doc.text(d.oficinaEndereco||'',14,y+9);doc.text(d.oficinaEmail||'',14,y+13);doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text('ORÇAMENTO / ORDEM DE SERVIÇO',118,y);doc.setDrawColor(...navy);doc.setLineWidth(1);doc.line(14,31,196,31);
-    doc.autoTable({startY:38,theme:'grid',styles:{fontSize:7,cellPadding:2,lineColor:[203,213,225]},body:[[ 'OS',d.os,'Emissão',this.brDate(d.emissao)],['Cliente',d.cliente,'CPF/CNPJ',d.cpfCnpj],['Telefone',d.telefone,'Status',d.status],['Veículo',d.veiculo,'Placa',d.placa],['Ano',d.ano,'KM',d.km],['Chassi',d.chassi,'Prefixo/Patrimônio',d.prefixo],['Fiscal Contrato',d.fiscalContrato,'','']]});
-    const bar=(txt)=>{let yy=doc.lastAutoTable.finalY+8;doc.setFillColor(...navy);doc.rect(14,yy,182,7,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(txt,16,yy+5);doc.setTextColor(0);return yy+9};
-    let sy=bar('DEFEITO RECLAMADO / QUEIXA DO CLIENTE');doc.autoTable({startY:sy,theme:'grid',styles:{fontSize:8,cellPadding:2},body:[[d.defeito||'-']]});sy=bar('DIAGNÓSTICO TÉCNICO');doc.autoTable({startY:sy,theme:'grid',styles:{fontSize:8,cellPadding:2},body:[[d.diagnostico||'-']]});
-    sy=bar('RESUMO POR SEÇÃO DE MÃO DE OBRA');doc.autoTable({startY:sy,head:[['Seção','Códigos','Tipo veículo / sistema','Horas','Valor']],body:this.resumoSecoes().map(r=>[r.sec,r.cod,r.tipo,r.horas.toFixed(2),this.money(r.valor)]),theme:'grid',headStyles:{fillColor:navy},styles:{fontSize:7,cellPadding:2}});
-    sy=bar('SERVIÇOS / MÃO DE OBRA');doc.autoTable({startY:sy,head:[['Cód.','Sistema / tipo veic.','Descrição do serviço','TMO','Valor h','Desc.','Valor']],body:this.state.services.map(s=>[s.cod||'-',s.sistema,s.descricao,this.num(s.tmo).toFixed(2),this.money(s.valorHora),this.num(s.desc).toFixed(1)+'%',this.money(this.serviceTotal(s))]),theme:'grid',headStyles:{fillColor:navy},styles:{fontSize:6.8,cellPadding:1.8},columnStyles:{1:{cellWidth:42},2:{cellWidth:58}}});
-    sy=bar('PEÇAS / MATERIAIS');doc.autoTable({startY:sy,head:[['Cód.','Descrição','Marca/Fornecedor','Qtd.','Valor un.','Desc.','Total']],body:this.state.parts.map(p=>[p.cod||'-',p.descricao,p.fornecedor,this.num(p.qtd).toFixed(2),this.money(p.valorUnit),this.num(p.desc).toFixed(1)+'%',this.money(this.partTotal(p))]),theme:'grid',headStyles:{fillColor:navy},styles:{fontSize:7,cellPadding:2}});
-    const t=this.totals();doc.autoTable({startY:doc.lastAutoTable.finalY+8,theme:'grid',styles:{fontSize:9,fontStyle:'bold'},body:[['Total serviços',this.money(t.serv)],['Total peças',this.money(t.pec)],['TOTAL GERAL',this.money(t.total)]]});
-    const pages=doc.internal.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(7);doc.setTextColor(100);doc.text(((window.SOS_CONFIG.BRAND&&window.SOS_CONFIG.BRAND.assinatura)||'Powered by thIAguinho Soluções Digitais')+` - Página ${i}/${pages}`,105,290,{align:'center'});doc.setTextColor(0);}const name=`${(window.SOS_CONFIG.PDF&&window.SOS_CONFIG.PDF.prefixoArquivo)||'Orcamento'}_${(d.placa||d.os||'novo').replace(/\W/g,'_')}.pdf`;doc.save(name);this.state.lastPdfBlob=doc.output('blob');this.toast('PDF gerado.');},
-  async sharePDF(){if(!this.state.lastPdfBlob){this.generatePDF();}try{const d=this.collect();const file=new File([this.state.lastPdfBlob],`orcamento_${(d.placa||d.os||'novo').replace(/\W/g,'_')}.pdf`,{type:'application/pdf'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'Orçamento SOS Valêncio',text:this.whatsappText(),files:[file]});}else{await navigator.clipboard.writeText(this.whatsappText());this.toast('Resumo copiado. O compartilhamento de PDF depende do navegador/celular.');}}catch(e){this.toast('Não foi possível compartilhar automaticamente. Baixe o PDF e anexe no WhatsApp.');}},
-  whatsappText(){const d=this.collect(),t=this.totals();return `*${d.oficinaNome||'S.O.S. VALÊNCIO'}*\n*ORÇAMENTO / ORDEM DE SERVIÇO*\nOS: ${d.os||'-'}\nCliente: ${d.cliente||'-'}\nVeículo: ${d.veiculo||'-'} | Placa: ${d.placa||'-'}\n\nDefeito: ${d.defeito||'-'}\n\nTotal serviços: ${this.money(t.serv)}\nTotal peças: ${this.money(t.pec)}\n*Total geral: ${this.money(t.total)}*\n\nPDF gerado pelo sistema. Anexe o arquivo PDF nesta conversa.`},
-  openWhatsApp(){const phone=prompt('Número WhatsApp com DDD. Exemplo: 5517999999999', (window.SOS_CONFIG.OFFICE&&window.SOS_CONFIG.OFFICE.whatsapp)||'');if(!phone)return;window.open(`https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(this.whatsappText())}`,'_blank');},
-  exportJSON(){const blob=new Blob([JSON.stringify(this.collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`orcamento_${this.$('placa').value||this.$('os').value||'novo'}.json`;a.click();URL.revokeObjectURL(a.href);},
-  importJSON(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{this.apply(JSON.parse(r.result));this.saveLocal(true)}catch(e){this.toast('JSON inválido.')}};r.readAsText(f);},
-  saveConfigRuntime(){window.SOS_CONFIG.GROQ_API_KEY=this.$('cfgKey').value;window.SOS_CONFIG.GROQ_TRANSCRIPTION_MODEL=this.$('cfgTranscription').value;window.SOS_CONFIG.GROQ_CHAT_MODEL=this.$('cfgChat').value;this.toast('Configuração ativa nesta sessão. Para fixar, altere config.js.');},
-  toggleConfigPanel(id){const el=this.$(id);if(!el)return;el.classList.toggle('collapsed');const btn=el.querySelector('.config-tools .btn');if(btn)btn.innerHTML=el.classList.contains('collapsed')?'<i class="fa-solid fa-plus"></i> Abrir':'<i class="fa-solid fa-minus"></i> Minimizar';},
-  maximizeConfigPanel(id){document.querySelectorAll('.config-panel').forEach(p=>{p.classList.remove('col-12');p.classList.add('col-6')});const el=this.$(id);if(!el)return;el.classList.remove('collapsed','col-6');el.classList.add('col-12');el.scrollIntoView({behavior:'smooth',block:'start'});},
-  useExampleVoice(){this.$('audioText').value='Cliente 52 BPM Polícia Militar, CNPJ 04.198.514/0071-67, veículo Renault Duster placa FBO3E02, ano 2020, km 241601. Defeito reclamado checklist completo para diagnóstico. Diagnóstico técnico bateria fraca e bicos sujos. Adicionar serviço mecânica substituir bateria, TMO 0,30, valor hora 152,25, desconto 29. Adicionar serviço injeção limpar bicos injetores, TMO 1,50, valor hora 166,36, desconto 29. Adicionar peça bateria 60 amperes, quantidade 1, valor 420 reais.';this.AI.processText();},
-  Audio:{
-    media:null,chunks:[],recording:false,count:0,
-    async toggle(){
-      if(this.recording){this.media.stop();return;}
-      try{
-        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-        this.chunks=[];this.media=new MediaRecorder(stream);
-        this.media.ondataavailable=e=>{if(e.data.size)this.chunks.push(e.data)};
-        this.media.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(this.chunks,{type:'audio/webm'});this.transcribe(blob,'gravacao.webm');};
-        this.media.start();this.recording=true;App.$('recordBtn').classList.add('recording');App.$('recordBtn').innerHTML='<i class="fa-solid fa-stop"></i> Parar gravação';App.toast('Gravando...');
-      }catch(e){App.toast('Microfone negado ou indisponível.');}
-    },
-    async upload(input){
-      const f=input.files&&input.files[0];
-      if(f) await this.transcribe(f,f.name);
-      input.value='';
-    },
-    appendTranscript(text){
-      this.count++;
-      const old=App.$('audioText').value.trim();
-      const bloco=`[ÁUDIO ${this.count}] ${text}`;
-      App.$('audioText').value=old?old+'\n\n'+bloco:bloco;
-    },
-    async transcribe(blob,name){
-      this.recording=false;App.$('recordBtn').classList.remove('recording');App.$('recordBtn').innerHTML='<i class="fa-solid fa-microphone"></i> Gravar áudio';
-      const key=window.SOS_CONFIG.GROQ_API_KEY;
-      if(!key||key.includes('COLE_')){App.toast('Configure a chave Groq no config.js ou na tela Configuração.');return;}
-      App.$('aiReturn').textContent='Enviando áudio para Groq...';
-      const fd=new FormData();fd.append('file',blob,name);fd.append('model',window.SOS_CONFIG.GROQ_TRANSCRIPTION_MODEL||'whisper-large-v3-turbo');fd.append('language','pt');fd.append('response_format','json');
-      try{
-        const res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{Authorization:`Bearer ${key}`},body:fd});
-        const data=await res.json();if(!res.ok)throw new Error(data.error?.message||'Erro na transcrição');
-        const texto=(data.text||'').trim();
-        if(!texto){App.toast('Transcrição veio vazia.');return;}
-        this.appendTranscript(texto);
-        App.$('aiReturn').textContent='Áudio transcrito. Aplicando SOMENTE este novo áudio ao orçamento...';
-        await App.AI.processText(texto,{fromAudio:true,append:!!(App.$('aiAppendAudio')&&App.$('aiAppendAudio').checked)});
-      }catch(e){App.$('aiReturn').textContent='Falha: '+e.message;App.toast('Falha na transcrição Groq.');}
-    }
-  },
-  AI:{
-    async processText(textOverride=null,opts={}){
-      const text=String(textOverride!==null?textOverride:App.$('audioText').value).trim();
-      if(!text){App.toast('Digite ou grave um comando.');return;}
-      const key=window.SOS_CONFIG.GROQ_API_KEY;
-      if(!key||key.includes('COLE_')){App.$('aiReturn').textContent='Sem chave Groq. Aplicando parser local.';this.applyData(this.localParse(text),text,opts);return;}
-      App.$('aiReturn').textContent='IA analisando texto fielmente...';
-      const schema = `Retorne SOMENTE JSON válido, sem markdown, no formato:
+    <button class="navbtn" data-target="secItens" onclick="App.show('secItens')">
+      <i class="fa-solid fa-screwdriver-wrench"></i>
+      Orçamento
+    </button>
+
+    <button class="navbtn" data-target="secDados" onclick="App.show('secDados')">
+      <i class="fa-solid fa-clipboard-list"></i>
+      Dados
+    </button>
+
+    <button class="navbtn" data-target="secPreview" onclick="App.show('secPreview')">
+      <i class="fa-solid fa-eye"></i>
+      Preview
+    </button>
+
+    <button class="navbtn" data-target="secConfig" onclick="App.show('secConfig')">
+      <i class="fa-solid fa-gear"></i>
+      Config
+    </button>
+  </nav>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const App = {
+      state:{
+        services:[],
+        parts:[],
+        lastPdfBlob:null
+      },
+
+      ids:[
+        'oficinaNome',
+        'oficinaCnpj',
+        'oficinaTelefone',
+        'oficinaEmail',
+        'oficinaEndereco',
+        'os',
+        'emissao',
+        'status',
+        'fiscalContrato',
+        'cliente',
+        'cpfCnpj',
+        'telefone',
+        'veiculo',
+        'placa',
+        'ano',
+        'km',
+        'prefixo',
+        'chassi',
+        'defeito',
+        'diagnostico'
+      ],
+
+      $(id){
+        return document.getElementById(id);
+      },
+
+      money(v){
+        return (Number(v)||0).toLocaleString('pt-BR',{
+          style:'currency',
+          currency:'BRL'
+        });
+      },
+
+      num(v){
+        if(typeof v === 'number'){
+          return Number.isFinite(v) ? v : 0;
+        }
+
+        let x = String(v ?? '').trim().replace(/[^\d,.-]/g,'');
+
+        if(!x){
+          return 0;
+        }
+
+        const comma = x.lastIndexOf(',');
+        const dot = x.lastIndexOf('.');
+
+        if(comma > -1 && dot > -1){
+          x = comma > dot ? x.replace(/\./g,'').replace(',','.') : x.replace(/,/g,'');
+        }else if(comma > -1){
+          x = x.replace(',','.');
+        }else if(dot > -1){
+          const parts = x.split('.');
+          if(parts.length > 2 || parts[parts.length - 1].length === 3){
+            x = x.replace(/\./g,'');
+          }
+        }
+
+        return Number(x) || 0;
+      },
+
+      today(){
+        return new Date().toISOString().slice(0,10);
+      },
+
+      osCode(){
+        return Math.random().toString(36).slice(2,8).toUpperCase();
+      },
+
+      toast(msg){
+        const t = this.$('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(this._toastTimer);
+        this._toastTimer = setTimeout(()=>t.classList.remove('show'),3000);
+      },
+
+      init(){
+        const cfg = window.SOS_CONFIG || {};
+        const office = cfg.OFFICE || {};
+
+        this.$('oficinaNome').value = office.nome || 'S.O.S. VALÊNCIO';
+        this.$('oficinaCnpj').value = office.cnpj || '';
+        this.$('oficinaTelefone').value = office.telefone || '';
+        this.$('oficinaEmail').value = office.email || '';
+        this.$('oficinaEndereco').value = office.endereco || '';
+
+        this.$('status').value = (cfg.PDF && cfg.PDF.statusPadrao) || 'Orçamento_Enviado';
+        this.$('emissao').value = this.today();
+        this.$('os').value = this.osCode();
+
+        this.$('powered').textContent = (cfg.BRAND && cfg.BRAND.assinatura) || 'Powered by thIAguinho Soluções Digitais';
+
+        this.$('cfgKey').value = cfg.GROQ_API_KEY || '';
+        this.$('cfgTranscription').value = cfg.GROQ_TRANSCRIPTION_MODEL || 'whisper-large-v3-turbo';
+        this.$('cfgChat').value = cfg.GROQ_CHAT_MODEL || 'openai/gpt-oss-20b';
+
+        document.querySelectorAll('input,textarea,select').forEach(el=>{
+          el.addEventListener('input',()=>this.scheduleSave());
+        });
+
+        this.loadLocal();
+        this.renderAll();
+        this.show('secAudio');
+      },
+
+      show(id){
+        document.querySelectorAll('.section').forEach(s=>s.classList.remove('active','printme'));
+
+        if(!this.$(id)){
+          id = 'secAudio';
+        }
+
+        this.$(id).classList.add('active');
+
+        if(id === 'secPreview'){
+          this.$(id).classList.add('printme');
+          this.renderPreview();
+        }
+
+        document.querySelectorAll('.navbtn').forEach(b=>{
+          b.classList.toggle('active',b.dataset.target === id);
+        });
+
+        window.scrollTo({top:0,behavior:'smooth'});
+      },
+
+      collect(){
+        const d = {};
+
+        this.ids.forEach(id=>{
+          d[id] = this.$(id).value;
+        });
+
+        d.services = this.state.services;
+        d.parts = this.state.parts;
+
+        return d;
+      },
+
+      apply(d){
+        if(!d){
+          return;
+        }
+
+        this.ids.forEach(id=>{
+          if(d[id] !== undefined){
+            this.$(id).value = d[id];
+          }
+        });
+
+        this.state.services = Array.isArray(d.services) ? d.services : [];
+        this.state.parts = Array.isArray(d.parts) ? d.parts : [];
+
+        this.renderAll();
+      },
+
+      scheduleSave(){
+        clearTimeout(this._saveTimer);
+        this._saveTimer = setTimeout(()=>this.saveLocal(false),500);
+        this.updateTotals();
+      },
+
+      saveLocal(manual){
+        localStorage.setItem('sos_orcamento_atual',JSON.stringify(this.collect()));
+        this.$('saveStatus').textContent = 'Salvo local';
+
+        if(manual){
+          this.toast('Orçamento salvo no navegador.');
+        }
+      },
+
+      loadLocal(){
+        const raw = localStorage.getItem('sos_orcamento_atual');
+
+        if(!raw){
+          return;
+        }
+
+        try{
+          const d = JSON.parse(raw);
+          this.apply(d);
+          this.toast('Orçamento local carregado.');
+        }catch(e){}
+      },
+
+      clearLocal(){
+        if(confirm('Limpar dados salvos neste navegador?')){
+          localStorage.removeItem('sos_orcamento_atual');
+          this.toast('Dados locais limpos.');
+        }
+      },
+
+      resetBudgetFields(keepOffice=true){
+        const office = {
+          oficinaNome:this.$('oficinaNome').value,
+          oficinaCnpj:this.$('oficinaCnpj').value,
+          oficinaTelefone:this.$('oficinaTelefone').value,
+          oficinaEmail:this.$('oficinaEmail').value,
+          oficinaEndereco:this.$('oficinaEndereco').value
+        };
+
+        this.ids.forEach(id=>{
+          this.$(id).value = '';
+        });
+
+        if(keepOffice){
+          Object.entries(office).forEach(([k,v])=>{
+            this.$(k).value = v;
+          });
+        }
+
+        this.$('emissao').value = this.today();
+        this.$('os').value = this.osCode();
+        this.$('status').value = (window.SOS_CONFIG.PDF && window.SOS_CONFIG.PDF.statusPadrao) || 'Orçamento_Enviado';
+
+        this.state.services = [];
+        this.state.parts = [];
+        this.state.lastPdfBlob = null;
+
+        this.$('audioText').value = '';
+        this.$('aiReturn').textContent = 'Aguardando áudio ou texto...';
+
+        this.renderAll();
+      },
+
+      clearBudget(){
+        if(!confirm('Limpar TODO o orçamento da tela?')){
+          return;
+        }
+
+        this.resetBudgetFields(true);
+        this.saveLocal(true);
+        this.toast('Orçamento limpo.');
+      },
+
+      clearItems(){
+        if(!confirm('Limpar todas as peças e serviços?')){
+          return;
+        }
+
+        this.state.services = [];
+        this.state.parts = [];
+        this.renderAll();
+        this.saveLocal(true);
+        this.toast('Peças e serviços limpos.');
+      },
+
+      clearAudioText(){
+        this.$('audioText').value = '';
+        this.$('aiReturn').textContent = 'Aguardando áudio ou texto...';
+        this.toast('Texto limpo.');
+      },
+
+      normText(v,upper=true){
+        let x = String(v || '').replace(/\s+/g,' ').trim();
+        return upper ? x.toUpperCase() : x;
+      },
+
+      cleanKey(txt){
+        return this.normText(txt || '',true)
+          .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+          .replace(/\b(DE|DA|DO|DAS|DOS|A|O|AS|OS|E|EM|NA|NO|NAS|NOS|AOS|AO)\b/g,' ')
+          .replace(/\bJUNTOS\b/g,'JUNTO')
+          .replace(/\bJUNTAS\b/g,'JUNTA')
+          .replace(/\bTAMPAS\b/g,'TAMPA')
+          .replace(/\bVALVULAS\b/g,'VALVULA')
+          .replace(/\bDISCOS\b/g,'DISCO')
+          .replace(/\bPASTILHAS\b/g,'PASTILHA')
+          .replace(/\bUSADAS\b/g,'USADA')
+          .replace(/\bFREIOS\b/g,'FREIO')
+          .replace(/\s+/g,' ')
+          .trim();
+      },
+
+      partKey(p){
+        return this.cleanKey(p.descricao || '') + '|' + this.cleanKey(p.fornecedor || '');
+      },
+
+      serviceKey(s){
+        return this.cleanKey(s.secao || '') + '|' + this.cleanKey(s.descricao || '');
+      },
+
+      addPart(p={}){
+        const obj = {
+          cod:this.normText(p.cod || '',true),
+          descricao:this.normText(p.descricao || '',true),
+          fornecedor:this.normText(p.fornecedor || '',true),
+          qtd:this.num(p.qtd) || 1,
+          valorUnit:this.num(p.valorUnit ?? p.valor_unitario ?? p.valor ?? 0),
+          desc:this.num(p.desc) || 0
+        };
+
+        if(!obj.descricao){
+          return;
+        }
+
+        const k = this.partKey(obj);
+        const old = this.state.parts.find(x=>this.partKey(x) === k);
+
+        if(old){
+          if(obj.cod) old.cod = obj.cod;
+          if(obj.fornecedor) old.fornecedor = obj.fornecedor;
+          if(obj.qtd > 0) old.qtd = obj.qtd;
+          if(obj.valorUnit > 0) old.valorUnit = obj.valorUnit;
+          if(obj.desc > 0) old.desc = obj.desc;
+        }else{
+          this.state.parts.push(obj);
+        }
+
+        this.renderAll();
+        this.saveLocal(false);
+      },
+
+      addQuickPart(){
+        this.addPart({
+          descricao:'NOVA PEÇA',
+          qtd:1,
+          valorUnit:0,
+          desc:0
+        });
+
+        this.show('secItens');
+      },
+
+      removePart(i){
+        this.state.parts.splice(i,1);
+        this.renderAll();
+        this.saveLocal(false);
+      },
+
+      addService(s={}){
+        let tmo = this.num(s.tmo) || 0;
+        let valorHora = this.num(s.valorHora ?? s.valor_hora ?? 0);
+        let valorTotal = this.num(s.valorTotal ?? s.valor_total ?? s.total ?? s.valor ?? 0);
+
+        const obj = {
+          cod:this.normText(s.cod || '',true),
+          secao:this.normText(s.secao || 'MECANICA',true),
+          sistema:this.normText(s.sistema || 'MECANICA E ELETRICA GERAL EM VEICULOS PEQUENOS E MEDIOS\nTipo: CARRO',true),
+          descricao:this.normText(s.descricao || '',true),
+          tmo,
+          valorHora,
+          valorTotal,
+          desc:this.num(s.desc) || 0
+        };
+
+        if(!obj.descricao && valorTotal > 0){
+          obj.descricao = 'SERVIÇO';
+        }
+
+        if(!obj.descricao){
+          return;
+        }
+
+        const k = this.serviceKey(obj);
+        const old = this.state.services.find(x=>this.serviceKey(x) === k);
+
+        if(old){
+          if(obj.cod) old.cod = obj.cod;
+          if(obj.sistema) old.sistema = obj.sistema;
+          if(obj.tmo > 0) old.tmo = obj.tmo;
+
+          if(obj.valorTotal > 0){
+            old.valorTotal = obj.valorTotal;
+            old.valorHora = 0;
+            old.tmo = 0;
+          }else if(obj.valorHora > 0){
+            old.valorHora = obj.valorHora;
+            old.valorTotal = 0;
+            if(old.tmo <= 0) old.tmo = 1;
+          }
+
+          if(obj.desc > 0) old.desc = obj.desc;
+        }else{
+          this.state.services.push(obj);
+        }
+
+        this.renderAll();
+        this.saveLocal(false);
+      },
+
+      addQuickService(){
+        this.addService({
+          descricao:'NOVO SERVIÇO',
+          valorTotal:0,
+          tmo:0,
+          valorHora:0,
+          desc:0
+        });
+
+        this.show('secItens');
+      },
+
+      removeService(i){
+        this.state.services.splice(i,1);
+        this.renderAll();
+        this.saveLocal(false);
+      },
+
+      serviceTotal(s){
+        const direct = this.num(s.valorTotal ?? s.valor_total ?? 0);
+
+        if(direct > 0){
+          return direct * (1 - this.num(s.desc)/100);
+        }
+
+        const t = this.num(s.tmo);
+        const vh = this.num(s.valorHora);
+
+        return (t > 0 ? t : vh > 0 ? 1 : 0) * vh * (1 - this.num(s.desc)/100);
+      },
+
+      partTotal(p){
+        return this.num(p.qtd) * this.num(p.valorUnit) * (1 - this.num(p.desc)/100);
+      },
+
+      renderParts(){
+        const box = this.$('partsList');
+
+        if(!this.state.parts.length){
+          box.innerHTML = '<div class="empty">Nenhuma peça lançada.</div>';
+          return;
+        }
+
+        box.innerHTML = this.state.parts.map((p,i)=>`
+          <div class="item-card">
+            <div class="item-head">
+              <b>Peça ${i+1}</b>
+              <span class="item-total">${this.money(this.partTotal(p))}</span>
+            </div>
+
+            <div class="item-grid">
+              <div class="col-2 m6">
+                <label>Cód.</label>
+                <input value="${this.esc(p.cod)}" oninput="App.state.parts[${i}].cod=this.value;App.scheduleSave()">
+              </div>
+
+              <div class="col-5 m12">
+                <label>Descrição da peça</label>
+                <textarea oninput="App.state.parts[${i}].descricao=this.value;App.scheduleSave()">${this.esc(p.descricao)}</textarea>
+              </div>
+
+              <div class="col-3 m12">
+                <label>Marca/Fornecedor</label>
+                <input value="${this.esc(p.fornecedor)}" oninput="App.state.parts[${i}].fornecedor=this.value;App.scheduleSave()">
+              </div>
+
+              <div class="col-2 m6">
+                <label>Qtd.</label>
+                <input value="${p.qtd}" inputmode="decimal" oninput="App.state.parts[${i}].qtd=App.num(this.value);App.scheduleSave()">
+              </div>
+
+              <div class="col-3 m6">
+                <label>Valor un.</label>
+                <input value="${p.valorUnit}" inputmode="decimal" oninput="App.state.parts[${i}].valorUnit=App.num(this.value);App.scheduleSave()">
+              </div>
+
+              <div class="col-2 m6">
+                <label>Desc. %</label>
+                <input value="${p.desc}" inputmode="decimal" oninput="App.state.parts[${i}].desc=App.num(this.value);App.scheduleSave()">
+              </div>
+
+              <div class="col-7 m12">
+                <label>Ação</label>
+                <button class="btn bad small" onclick="App.removePart(${i})">
+                  <i class="fa-solid fa-trash"></i> Excluir peça
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      },
+renderServices(){
+        const box = this.$('servicesList');
+
+        if(!this.state.services.length){
+          box.innerHTML = '<div class="empty">Nenhum serviço lançado.</div>';
+          return;
+        }
+
+        box.innerHTML = this.state.services.map((s,i)=>`
+          <div class="item-card">
+            <div class="item-head">
+              <b>Serviço ${i+1}</b>
+              <span class="item-total">${this.money(this.serviceTotal(s))}</span>
+            </div>
+
+            <div class="item-grid">
+              <div class="col-2 m6">
+                <label>Cód.</label>
+                <input value="${this.esc(s.cod)}" oninput="App.state.services[${i}].cod=this.value;App.scheduleSave()">
+              </div>
+
+              <div class="col-3 m12">
+                <label>Seção</label>
+                <select onchange="App.state.services[${i}].secao=this.value;App.scheduleSave()">
+                  ${[
+                    'SEM SELECAO / MANUAL',
+                    'MECANICA',
+                    'TAPECARIA / CAPOTARIA',
+                    'FUNILARIA / PINTURA',
+                    'LAVAGEM / HIGIENIZACAO',
+                    'BORRACHARIA',
+                    'INJECAO / ALIMENTACAO',
+                    'ELETRICA',
+                    'CAMBIO'
+                  ].map(x=>`<option ${s.secao===x?'selected':''}>${x}</option>`).join('')}
+                </select>
+              </div>
+
+              <div class="col-7 m12">
+                <label>Sistema / tipo veic.</label>
+                <textarea oninput="App.state.services[${i}].sistema=this.value;App.scheduleSave()">${this.esc(s.sistema)}</textarea>
+              </div>
+
+              <div class="col-12 m12">
+                <label>Descrição do serviço</label>
+                <textarea oninput="App.state.services[${i}].descricao=this.value;App.scheduleSave()">${this.esc(s.descricao)}</textarea>
+              </div>
+
+              <div class="col-2 m6">
+                <label>TMO</label>
+                <input value="${s.tmo}" inputmode="decimal" oninput="App.state.services[${i}].tmo=App.num(this.value);App.state.services[${i}].valorTotal=0;App.scheduleSave()">
+              </div>
+
+              <div class="col-3 m6">
+                <label>Valor hora</label>
+                <input value="${s.valorHora}" inputmode="decimal" oninput="App.state.services[${i}].valorHora=App.num(this.value);App.state.services[${i}].valorTotal=0;App.scheduleSave()">
+              </div>
+
+              <div class="col-3 m6">
+                <label>Valor total</label>
+                <input value="${s.valorTotal || 0}" inputmode="decimal" oninput="App.state.services[${i}].valorTotal=App.num(this.value);App.scheduleSave()">
+              </div>
+
+              <div class="col-2 m6">
+                <label>Desc. %</label>
+                <input value="${s.desc}" inputmode="decimal" oninput="App.state.services[${i}].desc=App.num(this.value);App.scheduleSave()">
+              </div>
+
+              <div class="col-2 m12">
+                <label>Ação</label>
+                <button class="btn bad small" onclick="App.removeService(${i})">
+                  <i class="fa-solid fa-trash"></i> Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      },
+
+      renderAll(){
+        this.renderParts();
+        this.renderServices();
+        this.updateTotals();
+        this.renderPreview();
+      },
+
+      totals(){
+        const serv = this.state.services.reduce((a,s)=>a+this.serviceTotal(s),0);
+        const pec = this.state.parts.reduce((a,p)=>a+this.partTotal(p),0);
+        const hrs = this.state.services.reduce((a,s)=>a+this.num(s.tmo),0);
+
+        return {
+          serv,
+          pec,
+          hrs,
+          total:serv+pec
+        };
+      },
+
+      updateTotals(){
+        const t = this.totals();
+
+        this.$('totalServicos').textContent = this.money(t.serv);
+        this.$('totalPecas').textContent = this.money(t.pec);
+        this.$('totalHoras').textContent = t.hrs.toLocaleString('pt-BR',{
+          minimumFractionDigits:2,
+          maximumFractionDigits:2
+        }) + ' h';
+        this.$('totalGeral').textContent = this.money(t.total);
+      },
+
+      resumoSecoes(){
+        const map = {};
+
+        this.state.services.forEach(s=>{
+          const k = s.secao || 'SEM SELECAO / MANUAL';
+
+          if(!map[k]){
+            map[k] = {
+              cod:[],
+              tipo:[],
+              horas:0,
+              valor:0
+            };
+          }
+
+          if(s.cod){
+            map[k].cod.push(s.cod);
+          }
+
+          if(s.sistema){
+            map[k].tipo.push(String(s.sistema).split('\n')[0]);
+          }
+
+          map[k].horas += this.num(s.tmo);
+          map[k].valor += this.serviceTotal(s);
+        });
+
+        return Object.entries(map).map(([sec,v])=>({
+          sec,
+          cod:[...new Set(v.cod)].slice(0,6).join(', ') || '-',
+          tipo:[...new Set(v.tipo)].slice(0,2).join(' / ') || '-',
+          horas:v.horas,
+          valor:v.valor
+        }));
+      },
+
+      renderPreview(){
+        const d = this.collect();
+        const t = this.totals();
+        const res = this.resumoSecoes();
+
+        const resumo = res.map(r=>`
+          <tr>
+            <td>${this.esc(r.sec)}</td>
+            <td>${this.esc(r.cod)}</td>
+            <td>${this.esc(r.tipo)}</td>
+            <td>${r.horas.toFixed(2)}</td>
+            <td class="right">${this.money(r.valor)}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="5" class="empty">Sem mão de obra.</td></tr>';
+
+        const services = this.state.services.map(s=>`
+          <tr>
+            <td>${this.esc(s.cod || '-')}</td>
+            <td>${this.esc(s.sistema)}</td>
+            <td>${this.esc(s.descricao)}</td>
+            <td>${this.num(s.tmo).toFixed(2)}</td>
+            <td>${this.money(s.valorHora)}</td>
+            <td>${this.num(s.desc).toFixed(1)}%</td>
+            <td class="right">${this.money(this.serviceTotal(s))}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="7" class="empty">Sem serviços.</td></tr>';
+
+        const parts = this.state.parts.map(p=>`
+          <tr>
+            <td>${this.esc(p.cod || '-')}</td>
+            <td>${this.esc(p.descricao)}</td>
+            <td>${this.esc(p.fornecedor)}</td>
+            <td>${this.num(p.qtd).toFixed(2)}</td>
+            <td>${this.money(p.valorUnit)}</td>
+            <td>${this.num(p.desc).toFixed(1)}%</td>
+            <td class="right">${this.money(this.partTotal(p))}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="7" class="empty">Sem peças.</td></tr>';
+
+        this.$('preview').innerHTML = `
+          <div class="pdfsheet">
+            <div class="pdf-head">
+              <div>
+                <h1>${this.esc(d.oficinaNome)}</h1>
+                <p>
+                  CNPJ: ${this.esc(d.oficinaCnpj)} | Tel/Whats: ${this.esc(d.oficinaTelefone)}<br>
+                  ${this.esc(d.oficinaEndereco)}<br>
+                  ${this.esc(d.oficinaEmail)}
+                </p>
+              </div>
+              <div class="pdf-title">ORÇAMENTO / ORDEM DE SERVIÇO</div>
+            </div>
+
+            <table class="pdf-table">
+              <tr>
+                <td><b>OS</b></td>
+                <td>${this.esc(d.os)}</td>
+                <td><b>Emissão</b></td>
+                <td>${this.brDate(d.emissao)}</td>
+              </tr>
+              <tr>
+                <td><b>Cliente</b></td>
+                <td>${this.esc(d.cliente)}</td>
+                <td><b>CPF/CNPJ</b></td>
+                <td>${this.esc(d.cpfCnpj)}</td>
+              </tr>
+              <tr>
+                <td><b>Telefone</b></td>
+                <td>${this.esc(d.telefone)}</td>
+                <td><b>Status</b></td>
+                <td>${this.esc(d.status)}</td>
+              </tr>
+              <tr>
+                <td><b>Veículo</b></td>
+                <td>${this.esc(d.veiculo)}</td>
+                <td><b>Placa</b></td>
+                <td>${this.esc(d.placa)}</td>
+              </tr>
+              <tr>
+                <td><b>Ano</b></td>
+                <td>${this.esc(d.ano)}</td>
+                <td><b>KM</b></td>
+                <td>${this.esc(d.km)}</td>
+              </tr>
+              <tr>
+                <td><b>Chassi</b></td>
+                <td>${this.esc(d.chassi)}</td>
+                <td><b>Prefixo/Patrimônio</b></td>
+                <td>${this.esc(d.prefixo)}</td>
+              </tr>
+              <tr>
+                <td><b>Fiscal Contrato</b></td>
+                <td colspan="3">${this.esc(d.fiscalContrato)}</td>
+              </tr>
+            </table>
+
+            <div class="pdf-bar">Defeito reclamado / queixa do cliente</div>
+            <table class="pdf-table">
+              <tr><td>${this.nl(d.defeito || '-')}</td></tr>
+            </table>
+
+            <div class="pdf-bar">Diagnóstico técnico</div>
+            <table class="pdf-table">
+              <tr><td>${this.nl(d.diagnostico || '-')}</td></tr>
+            </table>
+
+            <div class="pdf-bar">Resumo por seção de mão de obra</div>
+            <table class="pdf-table">
+              <tr>
+                <th>Seção</th>
+                <th>Códigos</th>
+                <th>Tipo veículo / sistema</th>
+                <th>Horas</th>
+                <th>Valor</th>
+              </tr>
+              ${resumo}
+            </table>
+
+            <div class="pdf-bar">Serviços / mão de obra</div>
+            <table class="pdf-table">
+              <tr>
+                <th>Cód.</th>
+                <th>Sistema / tipo veic.</th>
+                <th>Descrição do serviço</th>
+                <th>TMO</th>
+                <th>Valor h</th>
+                <th>Desc.</th>
+                <th>Valor</th>
+              </tr>
+              ${services}
+            </table>
+
+            <div class="pdf-bar">Peças / materiais</div>
+            <table class="pdf-table">
+              <tr>
+                <th>Cód.</th>
+                <th>Descrição</th>
+                <th>Marca/Fornecedor</th>
+                <th>Qtd.</th>
+                <th>Valor un.</th>
+                <th>Desc.</th>
+                <th>Total</th>
+              </tr>
+              ${parts}
+            </table>
+
+            <table class="pdf-table">
+              <tr>
+                <td><b>Total serviços</b></td>
+                <td class="right">${this.money(t.serv)}</td>
+              </tr>
+              <tr>
+                <td><b>Total peças</b></td>
+                <td class="right">${this.money(t.pec)}</td>
+              </tr>
+              <tr>
+                <td><b>TOTAL GERAL</b></td>
+                <td class="right"><b>${this.money(t.total)}</b></td>
+              </tr>
+            </table>
+
+            <p style="text-align:center;color:#64748b;font-size:11px;font-weight:900;margin-top:20px">
+              ${this.esc((window.SOS_CONFIG.BRAND && window.SOS_CONFIG.BRAND.assinatura) || 'Powered by thIAguinho Soluções Digitais')}
+            </p>
+          </div>
+        `;
+      },
+
+      nl(v){
+        return this.esc(v).replace(/\n/g,'<br>');
+      },
+
+      brDate(v){
+        if(!v){
+          return '';
+        }
+
+        const [y,m,d] = v.split('-');
+
+        if(!y || !m || !d){
+          return v;
+        }
+
+        return `${d}/${m}/${y}`;
+      },
+
+      esc(v){
+        return String(v ?? '').replace(/[&<>"']/g,m=>({
+          '&':'&amp;',
+          '<':'&lt;',
+          '>':'&gt;',
+          '"':'&quot;',
+          "'":'&#39;'
+        }[m]));
+      },
+
+      generatePDF(){
+        const {jsPDF} = window.jspdf;
+        const d = this.collect();
+        const doc = new jsPDF('p','mm','a4');
+        const navy = [17,24,39];
+
+        let y = 14;
+
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(12);
+        doc.text((d.oficinaNome || 'S.O.S. VALÊNCIO').toUpperCase(),14,y);
+
+        doc.setFont('helvetica','normal');
+        doc.setFontSize(7);
+        doc.text(`CNPJ: ${d.oficinaCnpj || ''} | Tel/Whats: ${d.oficinaTelefone || ''}`,14,y+5);
+        doc.text(d.oficinaEndereco || '',14,y+9);
+        doc.text(d.oficinaEmail || '',14,y+13);
+
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(12);
+        doc.text('ORÇAMENTO / ORDEM DE SERVIÇO',118,y);
+
+        doc.setDrawColor(...navy);
+        doc.setLineWidth(1);
+        doc.line(14,31,196,31);
+
+        doc.autoTable({
+          startY:38,
+          theme:'grid',
+          styles:{
+            fontSize:7,
+            cellPadding:2,
+            lineColor:[203,213,225]
+          },
+          body:[
+            ['OS',d.os,'Emissão',this.brDate(d.emissao)],
+            ['Cliente',d.cliente,'CPF/CNPJ',d.cpfCnpj],
+            ['Telefone',d.telefone,'Status',d.status],
+            ['Veículo',d.veiculo,'Placa',d.placa],
+            ['Ano',d.ano,'KM',d.km],
+            ['Chassi',d.chassi,'Prefixo/Patrimônio',d.prefixo],
+            ['Fiscal Contrato',d.fiscalContrato,'','']
+          ]
+        });
+
+        const bar = (txt)=>{
+          let yy = doc.lastAutoTable.finalY + 8;
+          doc.setFillColor(...navy);
+          doc.rect(14,yy,182,7,'F');
+          doc.setTextColor(255);
+          doc.setFont('helvetica','bold');
+          doc.setFontSize(8);
+          doc.text(txt,16,yy+5);
+          doc.setTextColor(0);
+          return yy + 9;
+        };
+
+        let sy = bar('DEFEITO RECLAMADO / QUEIXA DO CLIENTE');
+        doc.autoTable({
+          startY:sy,
+          theme:'grid',
+          styles:{fontSize:8,cellPadding:2},
+          body:[[d.defeito || '-']]
+        });
+
+        sy = bar('DIAGNÓSTICO TÉCNICO');
+        doc.autoTable({
+          startY:sy,
+          theme:'grid',
+          styles:{fontSize:8,cellPadding:2},
+          body:[[d.diagnostico || '-']]
+        });
+
+        sy = bar('RESUMO POR SEÇÃO DE MÃO DE OBRA');
+        doc.autoTable({
+          startY:sy,
+          head:[['Seção','Códigos','Tipo veículo / sistema','Horas','Valor']],
+          body:this.resumoSecoes().map(r=>[
+            r.sec,
+            r.cod,
+            r.tipo,
+            r.horas.toFixed(2),
+            this.money(r.valor)
+          ]),
+          theme:'grid',
+          headStyles:{fillColor:navy},
+          styles:{fontSize:7,cellPadding:2}
+        });
+
+        sy = bar('SERVIÇOS / MÃO DE OBRA');
+        doc.autoTable({
+          startY:sy,
+          head:[['Cód.','Sistema / tipo veic.','Descrição do serviço','TMO','Valor h','Desc.','Valor']],
+          body:this.state.services.map(s=>[
+            s.cod || '-',
+            s.sistema,
+            s.descricao,
+            this.num(s.tmo).toFixed(2),
+            this.money(s.valorHora),
+            this.num(s.desc).toFixed(1)+'%',
+            this.money(this.serviceTotal(s))
+          ]),
+          theme:'grid',
+          headStyles:{fillColor:navy},
+          styles:{fontSize:6.8,cellPadding:1.8},
+          columnStyles:{
+            1:{cellWidth:42},
+            2:{cellWidth:58}
+          }
+        });
+
+        sy = bar('PEÇAS / MATERIAIS');
+        doc.autoTable({
+          startY:sy,
+          head:[['Cód.','Descrição','Marca/Fornecedor','Qtd.','Valor un.','Desc.','Total']],
+          body:this.state.parts.map(p=>[
+            p.cod || '-',
+            p.descricao,
+            p.fornecedor,
+            this.num(p.qtd).toFixed(2),
+            this.money(p.valorUnit),
+            this.num(p.desc).toFixed(1)+'%',
+            this.money(this.partTotal(p))
+          ]),
+          theme:'grid',
+          headStyles:{fillColor:navy},
+          styles:{fontSize:7,cellPadding:2}
+        });
+
+        const t = this.totals();
+
+        doc.autoTable({
+          startY:doc.lastAutoTable.finalY+8,
+          theme:'grid',
+          styles:{fontSize:9,fontStyle:'bold'},
+          body:[
+            ['Total serviços',this.money(t.serv)],
+            ['Total peças',this.money(t.pec)],
+            ['TOTAL GERAL',this.money(t.total)]
+          ]
+        });
+
+        const pages = doc.internal.getNumberOfPages();
+
+        for(let i=1;i<=pages;i++){
+          doc.setPage(i);
+          doc.setFontSize(7);
+          doc.setTextColor(100);
+          doc.text(
+            ((window.SOS_CONFIG.BRAND && window.SOS_CONFIG.BRAND.assinatura) || 'Powered by thIAguinho Soluções Digitais') + ` - Página ${i}/${pages}`,
+            105,
+            290,
+            {align:'center'}
+          );
+          doc.setTextColor(0);
+        }
+
+        const name = `${(window.SOS_CONFIG.PDF && window.SOS_CONFIG.PDF.prefixoArquivo) || 'Orcamento'}_${(d.placa || d.os || 'novo').replace(/\W/g,'_')}.pdf`;
+
+        doc.save(name);
+        this.state.lastPdfBlob = doc.output('blob');
+        this.toast('PDF gerado.');
+      },
+
+      async sharePDF(){
+        if(!this.state.lastPdfBlob){
+          this.generatePDF();
+        }
+
+        try{
+          const d = this.collect();
+          const file = new File(
+            [this.state.lastPdfBlob],
+            `orcamento_${(d.placa || d.os || 'novo').replace(/\W/g,'_')}.pdf`,
+            {type:'application/pdf'}
+          );
+
+          if(navigator.canShare && navigator.canShare({files:[file]})){
+            await navigator.share({
+              title:'Orçamento SOS Valêncio',
+              text:this.whatsappText(),
+              files:[file]
+            });
+          }else{
+            await navigator.clipboard.writeText(this.whatsappText());
+            this.toast('Resumo copiado. Anexe o PDF no WhatsApp.');
+          }
+        }catch(e){
+          this.toast('Não foi possível compartilhar. Baixe o PDF e anexe.');
+        }
+      },
+
+      whatsappText(){
+        const d = this.collect();
+        const t = this.totals();
+
+        return `*${d.oficinaNome || 'S.O.S. VALÊNCIO'}*
+*ORÇAMENTO / ORDEM DE SERVIÇO*
+
+OS: ${d.os || '-'}
+Cliente: ${d.cliente || '-'}
+Veículo: ${d.veiculo || '-'}
+Placa: ${d.placa || '-'}
+
+Total serviços: ${this.money(t.serv)}
+Total peças: ${this.money(t.pec)}
+*Total geral: ${this.money(t.total)}*
+
+PDF gerado pelo sistema. Anexe o arquivo PDF nesta conversa.`;
+      },
+
+      openWhatsApp(){
+        const phone = prompt(
+          'Número WhatsApp com DDD. Exemplo: 5517999999999',
+          (window.SOS_CONFIG.OFFICE && window.SOS_CONFIG.OFFICE.whatsapp) || ''
+        );
+
+        if(!phone){
+          return;
+        }
+
+        window.open(
+          `https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(this.whatsappText())}`,
+          '_blank'
+        );
+      },
+
+      exportJSON(){
+        const blob = new Blob([JSON.stringify(this.collect(),null,2)],{
+          type:'application/json'
+        });
+
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `orcamento_${this.$('placa').value || this.$('os').value || 'novo'}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      },
+
+      importJSON(input){
+        const f = input.files[0];
+
+        if(!f){
+          return;
+        }
+
+        const r = new FileReader();
+
+        r.onload = ()=>{
+          try{
+            this.apply(JSON.parse(r.result));
+            this.saveLocal(true);
+          }catch(e){
+            this.toast('JSON inválido.');
+          }
+        };
+
+        r.readAsText(f);
+      },
+
+      saveConfigRuntime(){
+        window.SOS_CONFIG.GROQ_API_KEY = this.$('cfgKey').value;
+        window.SOS_CONFIG.GROQ_TRANSCRIPTION_MODEL = this.$('cfgTranscription').value;
+        window.SOS_CONFIG.GROQ_CHAT_MODEL = this.$('cfgChat').value;
+
+        this.toast('Configuração ativa nesta sessão.');
+      },
+
+      Audio:{
+        media:null,
+        chunks:[],
+        recording:false,
+        count:0,
+
+        async toggle(){
+          if(this.recording){
+            this.media.stop();
+            return;
+          }
+
+          try{
+            const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+            this.chunks = [];
+            this.media = new MediaRecorder(stream);
+
+            this.media.ondataavailable = e=>{
+              if(e.data.size){
+                this.chunks.push(e.data);
+              }
+            };
+
+            this.media.onstop = ()=>{
+              stream.getTracks().forEach(t=>t.stop());
+              const blob = new Blob(this.chunks,{type:'audio/webm'});
+              this.transcribe(blob,'gravacao.webm');
+            };
+
+            this.media.start();
+            this.recording = true;
+
+            App.$('recordBtn').classList.add('recording');
+            App.$('recordBtn').innerHTML = '<i class="fa-solid fa-stop"></i> Parar';
+            App.toast('Gravando...');
+          }catch(e){
+            App.toast('Microfone negado ou indisponível.');
+          }
+        },
+
+        async upload(input){
+          const f = input.files && input.files[0];
+
+          if(f){
+            await this.transcribe(f,f.name);
+          }
+
+          input.value = '';
+        },
+
+        appendTranscript(text){
+          this.count++;
+
+          const old = App.$('audioText').value.trim();
+          const bloco = `[ÁUDIO ${this.count}] ${text}`;
+
+          App.$('audioText').value = old ? old + '\n\n' + bloco : bloco;
+        },
+
+        async transcribe(blob,name){
+          this.recording = false;
+
+          App.$('recordBtn').classList.remove('recording');
+          App.$('recordBtn').innerHTML = '<i class="fa-solid fa-microphone"></i> Gravar';
+
+          const key = window.SOS_CONFIG.GROQ_API_KEY;
+
+          if(!key || key.includes('COLE_')){
+            App.toast('Configure a chave Groq.');
+            return;
+          }
+
+          App.$('aiReturn').textContent = 'Enviando áudio para Groq...';
+
+          const fd = new FormData();
+          fd.append('file',blob,name);
+          fd.append('model',window.SOS_CONFIG.GROQ_TRANSCRIPTION_MODEL || 'whisper-large-v3-turbo');
+          fd.append('language','pt');
+          fd.append('response_format','json');
+
+          try{
+            const res = await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{
+              method:'POST',
+              headers:{
+                Authorization:`Bearer ${key}`
+              },
+              body:fd
+            });
+
+            const data = await res.json();
+
+            if(!res.ok){
+              throw new Error(data.error?.message || 'Erro na transcrição');
+            }
+
+            const texto = (data.text || '').trim();
+
+            if(!texto){
+              App.toast('Transcrição veio vazia.');
+              return;
+            }
+
+            this.appendTranscript(texto);
+            App.$('aiReturn').textContent = 'Áudio transcrito. Aplicando este áudio ao orçamento...';
+
+            await App.AI.processText(texto,{fromAudio:true});
+          }catch(e){
+            App.$('aiReturn').textContent = 'Falha: ' + e.message;
+            App.toast('Falha na transcrição Groq.');
+          }
+        }
+      },
+
+      AI:{
+        async processText(textOverride=null,opts={}){
+          const text = String(textOverride !== null ? textOverride : App.$('audioText').value).trim();
+
+          if(!text){
+            App.toast('Digite ou grave um comando.');
+            return;
+          }
+
+          const key = window.SOS_CONFIG.GROQ_API_KEY;
+
+          if(!key || key.includes('COLE_')){
+            App.$('aiReturn').textContent = 'Sem chave Groq. Aplicando parser local.';
+            this.applyData(this.localParse(text),text,opts);
+            return;
+          }
+
+          App.$('aiReturn').textContent = 'IA analisando texto...';
+
+          const schema = `Retorne SOMENTE JSON válido, sem markdown, no formato:
 {
-  "campos":{"cliente":"","cpfCnpj":"","telefone":"","veiculo":"","placa":"","ano":"","km":"","chassi":"","prefixo":"","fiscalContrato":"","defeito":"","diagnostico":""},
-  "servicos":[{"cod":"","secao":"MECANICA","sistema":"","descricao":"","tmo":0,"valorHora":0,"valorTotal":0,"desc":0}],
-  "pecas":[{"cod":"","descricao":"","fornecedor":"","qtd":1,"valorUnit":0,"desc":0}]
+  "campos":{
+    "cliente":"",
+    "cpfCnpj":"",
+    "telefone":"",
+    "veiculo":"",
+    "placa":"",
+    "ano":"",
+    "km":"",
+    "chassi":"",
+    "prefixo":"",
+    "fiscalContrato":"",
+    "defeito":"",
+    "diagnostico":""
+  },
+  "servicos":[
+    {
+      "cod":"",
+      "secao":"MECANICA",
+      "sistema":"",
+      "descricao":"",
+      "tmo":0,
+      "valorHora":0,
+      "valorTotal":0,
+      "desc":0
+    }
+  ],
+  "pecas":[
+    {
+      "cod":"",
+      "descricao":"",
+      "fornecedor":"",
+      "qtd":1,
+      "valorUnit":0,
+      "desc":0
+    }
+  ]
 }
 
 REGRAS ABSOLUTAS:
+
 1) Seja fiel ao texto. Não invente cliente, veículo, peça, serviço ou valor.
-2) Serviço/mão de obra deve ser extraído quando o texto disser claramente um trabalho: TROCAR, SUBSTITUIR, REMOVER, INSTALAR, LIMPAR, HIGIENIZAR, POLIR, ALINHAR, BALANCEAR, REVISAR, CONSERTAR, RECUPERAR, REGULAR, DIAGNOSTICAR, REPARAR, CORRIGIR, SOLDAR, PINTAR.
-3) Use SERVIÇO somente se o texto disser literalmente serviço/mão de obra com valor. Exemplo: "serviço 500" => descricao "SERVIÇO", valorTotal 500, tmo 0, valorHora 0.
-4) Se falar valor total do serviço, coloque em valorTotal. Se falar valor hora/TMO, coloque em valorHora e tmo. Se não houver valor, use 0.
-5) Peça/material/produto deve ser extraído quando o texto citar item físico com quantidade e valor.
-6) REGRA CRÍTICA DE PEÇAS COM QUANTIDADE E VALOR: quando o texto disser "dois discos de freio 640", "2 discos de freio 640", "par de discos 640", considere 640 como VALOR TOTAL DO CONJUNTO, não como valor unitário. Retorne qtd 2 e valorUnit 320.
-7) Só considere valor cheio como unitário quando o texto disser claramente: "cada", "cada um", "cada peça", "unitário", "por unidade", "por peça". Exemplo: "dois discos de freio 640 cada" => qtd 2 e valorUnit 640.
-8) "jogo", "kit" e "par" sem a palavra "cada" são tratados como conjunto total. Ex.: "jogo de pastilha 293" => qtd 1 e valorUnit 293.
-9) Se falar desconto, coloque desc.
-10) Tudo em MAIÚSCULO.
-11) Não use dados de exemplo nem orçamento anterior.
-12) Em novo áudio, devolva apenas o que apareceu neste texto.`;
-      try{
-        const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify({model:window.SOS_CONFIG.GROQ_CHAT_MODEL||'openai/gpt-oss-20b',temperature:0,messages:[{role:'system',content:'Você é um extrator fiel de orçamento automotivo. Extraia o que foi dito. Não complete por suposição, mas não descarte serviços reais quando forem ditos por verbos de trabalho.'},{role:'user',content:schema+'\nTEXTO REAL DO ÁUDIO/COMANDO:\n'+text}]})});
-        const data=await res.json();if(!res.ok)throw new Error(data.error?.message||'Erro na IA');
-        let content=data.choices?.[0]?.message?.content||'';content=content.replace(/```json|```/g,'').trim();
-        let json=JSON.parse(content);
-        json=this.mergeSupplement(json,this.localParse(text));
-        App.$('aiReturn').textContent=JSON.stringify(json,null,2);
-        this.applyData(json,text,opts);App.toast('Áudio aplicado ao orçamento.');
-      }catch(e){App.$('aiReturn').textContent='IA falhou: '+e.message+'\nAplicando parser local.';this.applyData(this.localParse(text),text,opts);}
-    },
-    plain(v){return App.normText(v||'',true).normalize('NFD').replace(/[\u0300-\u036f]/g,'');},
-    badDesc(desc){const d=this.plain(desc);return !d||/^[0-9.,]+$/.test(d)||['SERVICO','MAO DE OBRA','PECA','ITEM','MECANICA','MATERIAL','PRODUTO','ORCAMENTO'].includes(d)||d.length<3;},
-    words(desc){return this.plain(desc).split(/[^A-Z0-9]+/).filter(w=>w.length>2&&!['PARA','COMO','LADO','VALOR','TOTAL','SERVICO','PECA','MAO','OBRA','COM','DOS','DAS','DAS','UMA','UM','DE','DO','DA','EM','NO','NA','POR','REAIS','REAL','TMO','QTD'].includes(w));},
-    hasItemEvidence(item,source,type,strict=false){
-      const desc=String(item&&item.descricao||'').trim();const src=this.plain(source);const d=this.plain(desc);
-      if(!src||!d)return false;
-      if(src.includes(d))return true;
-      const words=this.words(desc);const hits=words.filter(w=>src.includes(w));
-      if(!words.length)return false;
-      if(type==='servico'){
-        const actions=['TROCAR','TROCA','SUBSTITUIR','REMOVER','INSTALAR','LIMPAR','HIGIENIZAR','POLIR','ALINHAR','BALANCEAR','REVISAR','CONSERTAR','RECUPERAR','REGULAR','DIAGNOSTICAR','REPARAR','REPARO','CORRIGIR','SOLDAR','PINTAR'];
-        const hasAction=actions.some(a=>src.includes(a));const descHasAction=actions.some(a=>d.includes(a));
-        return strict?(hits.length>=Math.min(2,words.length)&&hasAction):(hits.length>=2||(hits.length>=1&&(hasAction||descHasAction)));
+
+2) Serviço/mão de obra deve ser extraído quando o texto disser claramente um trabalho ou quando disser literalmente serviço/mão de obra com valor.
+
+3) Se falar "serviço 500", retorne serviço com descricao "SERVIÇO", valorTotal 500, tmo 0 e valorHora 0.
+
+4) Peça/material/produto deve ser extraído quando o texto citar item físico com quantidade e valor.
+
+5) Tudo em MAIÚSCULO.
+
+6) REGRA CRÍTICA DE PEÇAS COM QUANTIDADE E VALOR:
+Quando o texto disser "dois discos de freio 640", "2 discos de freio 640", "par de discos 640", "jogo de pastilha 293", "kit junta tampa de válvula 383", considere o valor falado como VALOR TOTAL DO CONJUNTO, não como valor unitário.
+
+Exemplo:
+Texto: "dois discos de freio 640"
+Retorno:
+{"descricao":"DISCOS DE FREIO","qtd":2,"valorUnit":320,"desc":0}
+
+Exemplo:
+Texto: "dois discos de freio 640 cada"
+Retorno:
+{"descricao":"DISCOS DE FREIO","qtd":2,"valorUnit":640,"desc":0}
+
+7) Só considere valor cheio como unitário quando o texto disser claramente:
+"cada", "cada um", "cada peça", "unitário", "por unidade", "por peça", "valor unitário".
+
+8) Não use dados de exemplo nem orçamento anterior.
+
+9) Em novo áudio, devolva apenas o que apareceu neste texto.`;
+
+          try{
+            const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+              method:'POST',
+              headers:{
+                Authorization:`Bearer ${key}`,
+                'Content-Type':'application/json'
+              },
+              body:JSON.stringify({
+                model:window.SOS_CONFIG.GROQ_CHAT_MODEL || 'openai/gpt-oss-20b',
+                temperature:0,
+                messages:[
+                  {
+                    role:'system',
+                    content:'Você é um extrator fiel de orçamento automotivo. Extraia somente o que foi dito. Não invente.'
+                  },
+                  {
+                    role:'user',
+                    content:schema + '\nTEXTO REAL DO ÁUDIO/COMANDO:\n' + text
+                  }
+                ]
+              })
+            });
+
+            const data = await res.json();
+
+            if(!res.ok){
+              throw new Error(data.error?.message || 'Erro na IA');
+            }
+
+            let content = data.choices?.[0]?.message?.content || '';
+            content = content.replace(/```json|```/g,'').trim();
+
+            let json = JSON.parse(content);
+            json = this.mergeSupplement(json,this.localParse(text));
+
+            App.$('aiReturn').textContent = JSON.stringify(json,null,2);
+
+            this.applyData(json,text,opts);
+            App.toast('Aplicado ao orçamento.');
+          }catch(e){
+            App.$('aiReturn').textContent = 'IA falhou: ' + e.message + '\nAplicando parser local.';
+            this.applyData(this.localParse(text),text,opts);
+          }
+        },
+
+        plain(v){
+          return App.normText(v || '',true)
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g,'');
+        },
+
+        badDesc(desc){
+          const d = this.plain(desc);
+
+          return !d ||
+            /^[0-9.,]+$/.test(d) ||
+            ['SERVICO','MAO DE OBRA','PECA','ITEM','MECANICA','MATERIAL','PRODUTO','ORCAMENTO'].includes(d) ||
+            d.length < 3;
+        },
+
+        badPartDesc(desc){
+          const d = this.plain(desc);
+          return this.badDesc(desc) || /\b(SERVICO|MAO\s+DE\s+OBRA|MAO|OBRA)\b/.test(d);
+        },
+
+        words(desc){
+          return this.plain(desc)
+            .split(/[^A-Z0-9]+/)
+            .filter(w=>w.length>2 && ![
+              'PARA',
+              'COMO',
+              'LADO',
+              'VALOR',
+              'TOTAL',
+              'SERVICO',
+              'PECA',
+              'MAO',
+              'OBRA',
+              'COM',
+              'SEM',
+              'UMA',
+              'UM',
+              'DOIS',
+              'DUAS',
+              'TRES',
+              'QUATRO'
+            ].includes(w));
+        },
+
+        valueFrom(trecho){
+          const m = String(trecho || '').match(/(?:R\$|\breais?\b)?\s*(\d{1,6}(?:[.,]\d{1,2})?)/i);
+          return m ? App.num(m[1]) : 0;
+        },
+
+        trailingMoney(trecho){
+          const m = String(trecho || '').match(/(\d{1,6}(?:[.,]\d{1,2})?)\s*(?:reais?)?\s*$/i);
+          return m ? App.num(m[1]) : 0;
+        },
+
+        numberWordToNumber(txt){
+          const s = this.plain(txt);
+
+          if(/\b(UM|UMA)\b/.test(s)) return 1;
+          if(/\b(DOIS|DUAS|PAR)\b/.test(s)) return 2;
+          if(/\b(TRES|TRÊS)\b/.test(s)) return 3;
+          if(/\b(QUATRO)\b/.test(s)) return 4;
+          if(/\b(CINCO)\b/.test(s)) return 5;
+
+          const m = s.match(/\b(\d+)\b/);
+          return m ? App.num(m[1]) : 1;
+        },
+
+        splitText(text){
+          return String(text || '')
+            .replace(/\s+e\s+/gi, ', ')
+            .split(/[;\n]|,(?!\d)/)
+            .map(x=>x.trim())
+            .filter(Boolean);
+        },
+
+        partSegment(desc, source){
+          const chunks = this.splitText(source);
+          const words = this.words(desc);
+
+          if(!chunks.length || !words.length){
+            return String(source || '');
+          }
+
+          let best = chunks[0];
+          let bestHits = -1;
+
+          chunks.forEach(chunk=>{
+            const pc = this.plain(chunk);
+            const hits = words.filter(w=>pc.includes(w)).length;
+
+            if(hits > bestHits){
+              bestHits = hits;
+              best = chunk;
+            }
+          });
+
+          return best || String(source || '');
+        },
+
+        normalizePartItem(item, source){
+          const p = Object.assign({},item || {});
+          const desc = String(p.descricao || '').trim();
+          const trecho = this.partSegment(desc,source);
+
+          let qtd = App.num(p.qtd) || this.numberWordToNumber(trecho) || 1;
+          let valorAtual = App.num(p.valorUnit ?? p.valor_unitario ?? p.valor ?? 0) || 0;
+
+          const falouCada = /\b(cada|cada\s+um|cada\s+uma|unit[aá]rio|unit[aá]ria|por\s+unidade|por\s+pe[cç]a|valor\s*(unit[aá]rio|un))\b/i.test(trecho);
+
+          const valorFalado = this.trailingMoney(trecho) || valorAtual;
+
+          p.qtd = qtd;
+
+          if(valorFalado > 0 && qtd > 1 && !falouCada){
+            p.valorUnit = valorFalado / qtd;
+          }else{
+            p.valorUnit = valorFalado;
+          }
+
+          return p;
+        },
+
+        normalizeServiceItem(item, source){
+          const s = Object.assign({},item || {});
+          const desc = String(s.descricao || '').trim();
+
+          if(!desc && App.num(s.valorTotal ?? s.valor_total ?? s.valor ?? 0) > 0){
+            s.descricao = 'SERVIÇO';
+          }
+
+          if(this.plain(s.descricao) === 'SERVICO'){
+            const v = this.trailingMoney(source) || App.num(s.valorTotal ?? s.valor_total ?? s.valor ?? 0);
+            s.valorTotal = v;
+            s.tmo = 0;
+            s.valorHora = 0;
+          }
+
+          return s;
+        },
+
+        mergeSupplement(json,local){
+          json = json || {};
+          json.campos = Object.assign({},local.campos || {},json.campos || {});
+          json.servicos = json.servicos || [];
+          json.pecas = json.pecas || [];
+
+          const keyFiel = (txt)=>{
+            return App.cleanKey(txt || '');
+          };
+
+          const sk = s=>keyFiel(s.descricao || '');
+
+          (local.servicos || []).forEach(s=>{
+            if(s.descricao && !json.servicos.some(x=>sk(x) === sk(s))){
+              json.servicos.push(s);
+            }
+          });
+
+          const pk = p=>keyFiel(p.descricao || '');
+
+          (local.pecas || []).forEach(p=>{
+            if(p.descricao && !json.pecas.some(x=>pk(x) === pk(p))){
+              json.pecas.push(p);
+            }
+          });
+
+          return json;
+        },
+
+        localParse(text){
+          const out = {
+            campos:{},
+            servicos:[],
+            pecas:[]
+          };
+
+          const chunks = this.splitText(text);
+
+          chunks.forEach(ch=>{
+            const plain = this.plain(ch);
+            const valor = this.trailingMoney(ch);
+
+            if(!valor){
+              return;
+            }
+
+            if(/\b(SERVICO|MAO DE OBRA)\b/.test(plain)){
+              out.servicos.push({
+                descricao:'SERVIÇO',
+                secao:'MECANICA',
+                sistema:'MECANICA E ELETRICA GERAL EM VEICULOS PEQUENOS E MEDIOS\nTipo: CARRO',
+                tmo:0,
+                valorHora:0,
+                valorTotal:valor,
+                desc:0
+              });
+              return;
+            }
+
+            let desc = ch
+              .replace(/R\$/gi,'')
+              .replace(/\d{1,6}(?:[.,]\d{1,2})?\s*(?:reais?)?\s*$/i,'')
+              .trim();
+
+            let qtd = this.numberWordToNumber(desc);
+
+            desc = desc
+              .replace(/\b(um|uma|dois|duas|tr[eê]s|quatro|cinco|\d+)\b/i,'')
+              .replace(/\b(cada|cada um|cada uma|unit[aá]rio|unit[aá]ria|por unidade|por pe[cç]a)\b/ig,'')
+              .trim();
+
+            if(desc && !this.badPartDesc(desc)){
+              const falouCada = /\b(cada|unit[aá]rio|por unidade|por pe[cç]a)\b/i.test(ch);
+              out.pecas.push({
+                descricao:desc,
+                qtd:qtd,
+                valorUnit:(qtd > 1 && !falouCada) ? valor / qtd : valor,
+                desc:0
+              });
+            }
+          });
+
+          return out;
+        },
+
+        applyData(json,sourceText,opts={}){
+          json = json || {};
+          json.campos = json.campos || {};
+
+          Object.entries(json.campos).forEach(([k,v])=>{
+            if(v === undefined || v === null || String(v).trim() === ''){
+              return;
+            }
+
+            const idMap = {
+              cpfCnpj:'cpfCnpj',
+              fiscalContrato:'fiscalContrato'
+            };
+
+            const id = idMap[k] || k;
+
+            if(App.$(id)){
+              App.$(id).value = App.normText(v,true);
+            }
+          });
+
+          (json.pecas || []).forEach(raw=>{
+            const p = this.normalizePartItem(raw,sourceText);
+            const desc = String(p.descricao || '').trim();
+
+            if(this.badPartDesc(desc)){
+              return;
+            }
+
+            App.addPart(p);
+          });
+
+          (json.servicos || []).forEach(raw=>{
+            const s = this.normalizeServiceItem(raw,sourceText);
+            const desc = String(s.descricao || '').trim();
+
+            if(this.badDesc(desc) && App.num(s.valorTotal || 0) <= 0){
+              return;
+            }
+
+            App.addService(s);
+          });
+
+          App.renderAll();
+          App.saveLocal(false);
+        }
       }
-      const hasPartCue=/\b(PECA|PECAS|MATERIAL|MATERIAIS|PRODUTO|PRODUTOS|ITEM|ITENS|QTD|QUANTIDADE|UNIDADE|UNIDADES)\b/.test(src);
-      const hasValue=App.num(item&&(item.valorUnit??item.valor_unitario??item.valor??item.total))>0;
-      return strict?(hits.length>=Math.min(2,words.length)&&(hasPartCue||hasValue)):(hits.length>=1&&(hasPartCue||hasValue));
-    },
-    genericServiceAllowed(item,source){
-      const d=this.plain(item&&item.descricao||'');const src=this.plain(source);
-      const hasGeneric=!d||d==='SERVICO'||d==='MAO DE OBRA';
-      const hasValue=this.serviceValue(item)>0;
-      return hasGeneric&&hasValue&&this.sourceMentionsService(source);
-    },
-    sourceMentionsService(source){return /\b(SERVICO|SERVICOS|MAO\s+DE\s+OBRA|OBRA)\b/.test(this.plain(source));},
-    sourceMentionsHour(source){return /\b(TMO|HORA|HORAS|VALOR\s+HORA|VALOR\s+H)\b/.test(this.plain(source));},
-    serviceValue(item){return App.num(item&&(item.valorTotal??item.valor_total??item.total??item.valor??item.valorHora??item.valor_hora??item.valorUnit??item.valor_unitario));},
-    serviceValueFromSource(source){
-      const txt=String(source||'');const n='([0-9]{1,3}(?:\\.[0-9]{3})*(?:,[0-9]+)?|[0-9]+(?:[,.][0-9]+)?)';
-      let m=txt.match(new RegExp('(?:r\\$\\s*)'+n+'\\s*(?:reais?)?\\s*(?:o|a|de|do|da)?\\s*(?:servi[cç]o|m[aã]o de obra)\\b','i'));
-      if(m)return App.num(m[1]);
-      m=txt.match(new RegExp('(?:servi[cç]o|m[aã]o de obra)\\s*(?:de\\s*)?(?:r\\$\\s*)?'+n+'\\s*(?:reais?)?','i'));
-      if(m)return App.num(m[1]);
-      m=txt.match(new RegExp('\\b'+n+'\\s*(?:reais?)?\\s*(?:o|a|de|do|da)?\\s*(?:servi[cç]o|m[aã]o de obra)\\b','i'));
-      return m?App.num(m[1]):0;
-    },
-    normalizeServiceItem(item,source){
-      const s=Object.assign({},item||{});const hasHour=this.sourceMentionsHour(source);const mentionsService=this.sourceMentionsService(source);
-      let desc=String(s.descricao||'').trim();let total=this.serviceValueFromSource(source)||this.serviceValue(s);
-      if((!desc||this.badDesc(desc))&&total>0&&mentionsService)desc=/\bMAO\s+DE\s+OBRA|OBRA\b/.test(this.plain(source))?'MÃO DE OBRA':'SERVIÇO';
-      s.descricao=desc;
-      if(total>0&&!hasHour){
-        s.valorTotal=total;
-        s.valorHora=0;
-        s.valor_hora=0;
-        s.tmo=0;
-      }
-      return s;
-    },
-    badPartDesc(desc){
-      const d=this.plain(desc);
-      return this.badDesc(desc)||/\b(SERVICO|MAO\s+DE\s+OBRA|MAO|OBRA)\b/.test(d);
-    },
-    partSegment(desc, source){
-  const chunks = String(source||'')
-    .split(/[;\n]|,(?!\d)/)
-    .map(x=>x.trim())
-    .filter(Boolean);
+    };
 
-  const words = this.words(desc);
-  if(!chunks.length || !words.length) return String(source||'');
-
-  let best = chunks[0];
-  let bestHits = -1;
-
-  chunks.forEach(chunk=>{
-    const plainChunk = this.plain(chunk);
-    const hits = words.filter(w=>plainChunk.includes(w)).length;
-    if(hits > bestHits){
-      bestHits = hits;
-      best = chunk;
-    }
-  });
-
-  return best || String(source||'');
-},
-
-normalizePartItem(item, source){
-  const p = Object.assign({}, item || {});
-  const desc = String(p.descricao || '').trim();
-
-  let qtd = App.num(p.qtd) || 1;
-  let valorAtual = App.num(p.valorUnit ?? p.valor_unitario ?? p.valor ?? 0) || 0;
-
-  const trecho = this.partSegment(desc, source);
-
-  const falouCada = /\b(cada|cada\s+um|cada\s+uma|unit[aá]rio|unit[aá]ria|por\s+unidade|por\s+pe[cç]a|valor\s*(unit[aá]rio|un))\b/i.test(trecho);
-
-  const valorFalado =
-    this.valueFrom(trecho, 'valor\\s*(?:unit[aá]rio|un|da\\s*pe[cç]a)?|unit[aá]rio|por') ||
-    this.trailingMoney(trecho, true) ||
-    valorAtual;
-
-  p.qtd = qtd;
-
-  if(valorFalado > 0 && qtd > 1 && !falouCada){
-    p.valorUnit = valorFalado / qtd;
-  } else {
-    p.valorUnit = valorFalado;
-  }
-
-  return p;
-},
-    
-    mergeSupplement(json,local){
-  json=json||{};
-  json.campos=Object.assign({},local.campos||{},json.campos||{});
-  json.servicos=json.servicos||[];
-  json.pecas=json.pecas||[];
-
-  const keyFiel = (txt) => {
-    return App.normText(txt||'',true)
-      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-      .replace(/\b(DE|DA|DO|DAS|DOS|A|O|AS|OS|E|EM|NA|NO|NAS|NOS|AOS|AO)\b/g,' ')
-      .replace(/\bJUNTOS\b/g,'JUNTO')
-      .replace(/\bTAMPAS\b/g,'TAMPA')
-      .replace(/\bVALVULAS\b/g,'VALVULA')
-      .replace(/\bDISCOS\b/g,'DISCO')
-      .replace(/\bPASTILHAS\b/g,'PASTILHA')
-      .replace(/\bUSADAS\b/g,'USADA')
-      .replace(/\bFREIOS\b/g,'FREIO')
-      .replace(/\s+/g,' ')
-      .trim();
-  };
-
-  const sk = s => keyFiel(s.descricao||'');
-  (local.servicos||[]).forEach(s=>{
-    if(s.descricao && !json.servicos.some(x=>sk(x)===sk(s))){
-      json.servicos.push(s);
-    }
-  });
-
-  const pk = p => keyFiel(p.descricao||'');
-  (local.pecas||[]).forEach(p=>{
-    if(p.descricao && !json.pecas.some(x=>pk(x)===pk(p))){
-      json.pecas.push(p);
-    }
-  });
-
-  return json;
-},
-    applyData(json,sourceText='',opts={}){
-      let replace=false;
-      if(opts.append===true) replace=false;
-      else if(opts.fromAudio) replace=false;
-      else replace=App.$('aiReplaceItems')?App.$('aiReplaceItems').checked:false;
-      if(replace){App.state.services=[];App.state.parts=[];}
-      const upper=!(App.$('aiUppercase')&&!App.$('aiUppercase').checked);const strict=!!(App.$('aiStrict')&&App.$('aiStrict').checked);
-      const c=json.campos||{};Object.entries(c).forEach(([k,v])=>{if(v!==undefined&&v!==null&&String(v).trim()&&App.$(k)){let val=String(v).trim();if(upper&&['cliente','veiculo','placa','prefixo','fiscalContrato','defeito','diagnostico'].includes(k))val=val.toUpperCase();App.$(k).value=val}});
-      let rejected=[];
-      (json.servicos||[]).forEach(raw=>{const s=this.normalizeServiceItem(raw,sourceText);const desc=String(s.descricao||'').trim();const generic=this.genericServiceAllowed(s,sourceText);if((this.badDesc(desc)&&!generic)||(!generic&&!this.hasItemEvidence(s,sourceText,'servico',strict))){if(desc)rejected.push('SERVIÇO IGNORADO SEM EVIDÊNCIA NO ÁUDIO: '+desc);return;}App.addService(s);});
-     (json.pecas||[]).forEach(raw=>{
-  const p = this.normalizePartItem(raw, sourceText);
-  const desc = String(p.descricao||'').trim();
-
-  if(this.badPartDesc(desc)||!this.hasItemEvidence(p,sourceText,'peca',strict)){
-    if(desc)rejected.push('PEÇA IGNORADA SEM EVIDÊNCIA NO ÁUDIO: '+desc);
-    return;
-  }
-
-  App.addPart(p);
-});
-      App.renderAll();App.saveLocal(true);if(rejected.length)App.$('aiReturn').textContent+=(App.$('aiReturn').textContent?'\n\n':'')+'ITENS BLOQUEADOS PELO MODO FIEL:\n'+rejected.join('\n');
-    },
-    inferSection(desc,all){
-      const t=String(desc||'').toLowerCase();
-      const full=String(all||'').toLowerCase();
-      if(/bico|inje[cç][aã]o|vela|aliment/.test(t))return 'INJECAO / ALIMENTACAO';
-      if(/bateria|alternador|el[eé]tric|l[aâ]mpada|farol|lanterna/.test(t))return 'ELETRICA';
-      if(/pneu|balance|alinh/.test(t))return 'BORRACHARIA';
-      if(/cambio|câmbio|embreagem|tulipa/.test(t))return 'CAMBIO';
-      if(/banco|tape[cç]aria|carpete|courvin/.test(t))return 'TAPECARIA / CAPOTARIA';
-      if(/pint|funilar|polir|grafismo/.test(t))return 'FUNILARIA / PINTURA';
-      if(/lavar|higien/.test(t))return 'LAVAGEM / HIGIENIZACAO';
-      return 'MECANICA';
-    },
-    valueFrom(text,pattern){const n='([0-9]{1,3}(?:\\.[0-9]{3})*(?:,[0-9]+)?|[0-9]+(?:[,.][0-9]+)?)';const m=String(text||'').match(new RegExp('(?:'+pattern+')\\s*(?:de\\s*)?(?:r\\$\\s*)?'+n,'i'));return m?App.num(m[1]):0;},
-    trailingMoney(text,allowBare=false){const n='([0-9]{1,3}(?:\\.[0-9]{3})*(?:,[0-9]+)?|[0-9]+(?:[,.][0-9]+)?)';let m=String(text||'').match(new RegExp('(?:por|total|valor)\\s*(?:de\\s*)?(?:r\\$\\s*)?'+n+'\\s*(?:reais?)?\\s*$','i'));if(m)return App.num(m[1]);m=String(text||'').match(new RegExp('r\\$\\s*'+n+'\\s*$','i'));if(m)return App.num(m[1]);m=String(text||'').match(new RegExp('\\s'+n+'\\s*reais?\\s*$','i'));if(m)return App.num(m[1]);if(allowBare){m=String(text||'').match(new RegExp('\\s'+n+'\\s*$','i'));if(m)return App.num(m[1]);}return 0;},
-    cleanDesc(x){return String(x||'').replace(/\[[^\]]+\]/g,' ').replace(/^(adicionar|incluir|lan[cç]ar|colocar)\s+/i,'').replace(/^(servi[cç]o|m[aã]o de obra|pe[cç]a|material|produto|item)\s+/i,'').replace(/^(mec[aâ]nica|el[eé]trica|inje[cç][aã]o|borracharia|funilaria|pintura|tape[cç]aria|lavagem)\s+/i,'').replace(/^(o|a|os|as)\s+/i,'').replace(/\b(tmo|tempo|valor\s*(hora|h|total|unit[aá]rio)?|desconto|quantidade|qtd|por|r\$)\b.*$/i,'').replace(/\s+\d[\d.,]*\s*(reais?)?\s*$/i,'').replace(/\s+/g,' ').replace(/[,\s]+$/,'').trim();},
-    pushUnique(list,obj){const k=this.plain(obj.descricao);if(!k||list.some(x=>this.plain(x.descricao)===k))return;list.push(obj);},
-    makeService(raw,source){const rawText=String(raw||'').trim();const tmo=this.valueFrom(rawText,'tmo|tempo');const valorHora=this.valueFrom(rawText,'valor\\s*(?:hora|h)');const generic=/^\s*(servi[cç]o|m[aã]o de obra)\b/i.test(rawText);const valorTotal=this.valueFrom(rawText,'valor\\s*total|total\\s*do\\s*servi[cç]o|valor(?!\\s*(?:hora|h|unit))|por')||(!valorHora?this.trailingMoney(rawText,generic):0);let desc=this.cleanDesc(rawText);const allowedGeneric=generic&&valorTotal>0;if(this.badDesc(desc)&&allowedGeneric)desc=/^\s*m[aã]o de obra/i.test(rawText)?'MÃO DE OBRA':'SERVIÇO';if(this.badDesc(desc)&&!allowedGeneric)return null;const descPct=this.valueFrom(rawText,'desconto');return{secao:this.inferSection(desc,source),sistema:'',descricao:desc,tmo,valorHora,valorTotal,desc:descPct};},
-    leadingQty(raw){const map={UM:1,UMA:1,DOIS:2,DUAS:2,TRES:3,TRÊS:3,QUATRO:4,CINCO:5,SEIS:6,SETE:7,OITO:8,NOVE:9,DEZ:10};const m=String(raw||'').trim().match(/^(\d+|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez)\s+(.+)/i);if(!m)return{qtd:0,text:raw};const key=this.plain(m[1]);return{qtd:App.num(m[1])||map[key]||0,text:m[2]};},
-    makePart(raw){const lead=this.leadingQty(raw);const desc=this.cleanDesc(lead.text);if(this.badDesc(desc))return null;let qtd=this.valueFrom(raw,'quantidade|qtd')||lead.qtd;if(!qtd){const un=String(raw||'').match(/(?:^|\s)([0-9]+)\s*(?:un|unid|unidade|unidades)\b/i);qtd=un?App.num(un[1]):1;}qtd=qtd||1;const explicitUnit=/valor\s*(unit[aá]rio|un)\b|unit[aá]rio|cada|por\s+unidade/i.test(String(raw||''));let valorUnit=this.valueFrom(raw,'valor\\s*(?:unit[aá]rio|un|da\\s*pe[cç]a)?|unit[aá]rio|por')||this.trailingMoney(raw,true);if(valorUnit>0&&qtd>1&&!explicitUnit)valorUnit=valorUnit/qtd;return{descricao:desc,qtd,valorUnit,desc:this.valueFrom(raw,'desconto')};},
-    localParse(text){
-      const lower=text.toLowerCase();const campos={};
-      const placa=text.match(/placa\s+([a-zA-Z0-9]{7})/i);if(placa)campos.placa=placa[1].toUpperCase();
-      const ano=text.match(/ano\s+(\d{4})/i);if(ano)campos.ano=ano[1];
-      const km=text.match(/km\s+([\d\.]+)/i);if(km)campos.km=km[1];
-      const doc=text.match(/(?:cnpj|cpf)\s+([0-9.\-/]{11,18})/i);if(doc)campos.cpfCnpj=doc[1];
-      const tel=text.match(/(?:telefone|whats(?:app)?)\s+([0-9()\-\s]{8,})/i);if(tel)campos.telefone=tel[1].trim();
-      const chassi=text.match(/chassi\s+([a-zA-Z0-9]{8,})/i);if(chassi)campos.chassi=chassi[1].toUpperCase();
-      const prefixo=text.match(/(?:prefixo|patrim[oô]nio)\s+([^,.\n]+)/i);if(prefixo)campos.prefixo=prefixo[1].trim();
-      const cli=text.match(/cliente\s+([^,.\n]+)/i);if(cli)campos.cliente=cli[1].trim();
-      const vei=text.match(/ve[ií]culo\s+([^,.\n]+)/i);if(vei)campos.veiculo=vei[1].trim();
-      const def=text.match(/defeito(?: reclamado)?\s+([^\.\n]+)/i);if(def)campos.defeito=def[1].trim();
-      const diag=text.match(/diagn[oó]stico(?: t[eé]cnico)?\s+([^\.\n]+)/i);if(diag)campos.diagnostico=diag[1].trim();
-      const servicos=[];const pecas=[];
-      const source=String(text||'').replace(/\[[^\]]+\]/g,' ').replace(/\n/g,'. ');
-      const action='remover\\s+e\\s+instalar|troca(?:r)?(?:\\s+de)?|trocar|substituir|remover|instalar|limpar|higienizar|polir|alinhar|balancear|revisar|consertar|recuperar|regular|diagnosticar|reparar|corrigir|soldar|pintar';
-      const splitSource=source.replace(new RegExp('\\s+e\\s+('+action+')\\b','gi'),'. $1').replace(/\s+e\s+((?:servi[cç]o|m[aã]o de obra|pe[cç]a|material|produto|item)\b)/gi,'. $1');
-      const stop='(?=\\s*(?:[.;\\n]|,\\s*(?:pe[cç]a|material|produto|item|servi[cç]o|m[aã]o de obra|cliente|ve[ií]culo|placa|defeito|diagn[oó]stico)|\\b(?:pe[cç]a|material|produto|item)\\b|$))';
-      [...splitSource.matchAll(new RegExp('(?:adicionar\\s+|incluir\\s+|lan[cç]ar\\s+|colocar\\s+)?((?:servi[cç]o|m[aã]o de obra)\\s+.+?)'+stop,'gi'))].forEach(m=>{const s=this.makeService(m[1],source);if(s)this.pushUnique(servicos,s);});
-      [...splitSource.matchAll(new RegExp('\\b('+action+')\\s+(.+?)'+stop,'gi'))].forEach(m=>{const s=this.makeService((m[1]+' '+m[2]).trim(),source);if(s)this.pushUnique(servicos,s);});
-      [...splitSource.matchAll(new RegExp('(?:adicionar\\s+|incluir\\s+|lan[cç]ar\\s+|colocar\\s+)?(?:pe[cç]a|material|produto|item)\\s+(.+?)(?=\\s*(?:[.;\\n]|,\\s*(?:pe[cç]a|material|produto|item|servi[cç]o|m[aã]o de obra)|\\b(?:servi[cç]o|m[aã]o de obra)\\b|\\b(?:'+action+')\\b|$))','gi'))].forEach(m=>{const p=this.makePart(m[1]);if(p)this.pushUnique(pecas,p);});
-      splitSource.split(/[.;,]/).map(x=>x.trim()).filter(Boolean).forEach(chunk=>{if(/\b(cliente|ve[ií]culo|placa|defeito|diagn[oó]stico|servi[cç]o|m[aã]o de obra)\b/i.test(chunk))return;if(new RegExp('\\b('+action+')\\b','i').test(chunk))return;if(!this.trailingMoney(chunk,true))return;const p=this.makePart(chunk);if(p)this.pushUnique(pecas,p);});
-      return{campos,servicos,pecas};
-    }
-  }
-};
-window.addEventListener('DOMContentLoaded',()=>App.init());
-</script>
+    window.addEventListener('DOMContentLoaded',()=>App.init());
+  </script>
 </body>
 </html>
