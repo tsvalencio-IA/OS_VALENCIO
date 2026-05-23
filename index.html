@@ -334,11 +334,42 @@ const App = {
       return this.badDesc(desc)||/\b(SERVICO|MAO\s+DE\s+OBRA|MAO|OBRA)\b/.test(d);
     },
     mergeSupplement(json,local){
-      json=json||{};json.campos=Object.assign({},local.campos||{},json.campos||{});json.servicos=json.servicos||[];json.pecas=json.pecas||[];
-      const sk=s=>App.normText(s.descricao||'',true);(local.servicos||[]).forEach(s=>{if(s.descricao&&!json.servicos.some(x=>sk(x)===sk(s)))json.servicos.push(s)});
-      const pk=p=>App.normText(p.descricao||'',true);(local.pecas||[]).forEach(p=>{if(p.descricao&&!json.pecas.some(x=>pk(x)===pk(p)))json.pecas.push(p)});
-      return json;
-    },
+  json=json||{};
+  json.campos=Object.assign({},local.campos||{},json.campos||{});
+  json.servicos=json.servicos||[];
+  json.pecas=json.pecas||[];
+
+  const keyFiel = (txt) => {
+    return App.normText(txt||'',true)
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/\b(DE|DA|DO|DAS|DOS|A|O|AS|OS|E|EM|NA|NO|NAS|NOS|AOS|AO)\b/g,' ')
+      .replace(/\bJUNTOS\b/g,'JUNTO')
+      .replace(/\bTAMPAS\b/g,'TAMPA')
+      .replace(/\bVALVULAS\b/g,'VALVULA')
+      .replace(/\bDISCOS\b/g,'DISCO')
+      .replace(/\bPASTILHAS\b/g,'PASTILHA')
+      .replace(/\bUSADAS\b/g,'USADA')
+      .replace(/\bFREIOS\b/g,'FREIO')
+      .replace(/\s+/g,' ')
+      .trim();
+  };
+
+  const sk = s => keyFiel(s.descricao||'');
+  (local.servicos||[]).forEach(s=>{
+    if(s.descricao && !json.servicos.some(x=>sk(x)===sk(s))){
+      json.servicos.push(s);
+    }
+  });
+
+  const pk = p => keyFiel(p.descricao||'');
+  (local.pecas||[]).forEach(p=>{
+    if(p.descricao && !json.pecas.some(x=>pk(x)===pk(p))){
+      json.pecas.push(p);
+    }
+  });
+
+  return json;
+},
     applyData(json,sourceText='',opts={}){
       let replace=false;
       if(opts.append===true) replace=false;
