@@ -38,6 +38,40 @@
     .pdfsheet{background:#fff;max-width:900px;margin:0 auto;border:1px solid #cbd5e1;box-shadow:var(--shadow);padding:24px}.pdf-head{display:flex;justify-content:space-between;gap:20px;border-bottom:4px solid var(--navy);padding-bottom:18px;margin-bottom:22px}.pdf-head h1{font-size:18px;letter-spacing:.1em}.pdf-head p{font-size:11px;color:#334155;line-height:1.5}.pdf-title{text-align:right;font-size:18px;font-weight:900;letter-spacing:.06em;color:var(--navy)}.pdf-table{width:100%;border-collapse:collapse;margin-bottom:20px}.pdf-table td,.pdf-table th{border:1px solid #cbd5e1;padding:8px;font-size:12px}.pdf-bar{background:var(--navy);color:#fff;font-weight:900;padding:9px 10px;font-size:12px;text-transform:uppercase;margin:14px 0 8px}.empty{color:#64748b;font-size:13px;text-align:center;padding:18px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111827;color:#fff;padding:13px 18px;border-radius:999px;box-shadow:var(--shadow);font-weight:800;z-index:1000;display:none}.toast.show{display:block}.hidden{display:none!important}.muted{color:var(--muted);font-size:12px;line-height:1.5}.transcript{white-space:pre-wrap;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:14px;font-size:13px;line-height:1.5;min-height:74px}.drop{border:2px dashed #94a3b8;border-radius:16px;padding:18px;text-align:center;background:#f8fafc}.powered{text-align:center;color:#64748b;font-size:12px;font-weight:900;margin:26px 0 4px}.danger-note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:12px;border-radius:14px;font-size:12px;font-weight:700;line-height:1.45;margin-top:12px}.ok-note{background:#ecfdf5;border:1px solid #86efac;color:#166534;padding:12px;border-radius:14px;font-size:12px;font-weight:800;line-height:1.45;margin-top:12px}.compact-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.checkline{display:flex!important;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:#111827;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:12px}.checkline input{width:auto}.config-panel.collapsed .config-body{display:none}.config-tools{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}.card-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.card-title-row h3{margin-bottom:0}
     @media(max-width:980px){.app{display:block}.app.menu-collapsed{display:block}aside{position:fixed;left:0;top:0;width:86vw;max-width:360px;height:100vh}.app.menu-collapsed aside{transform:translateX(-105%);width:86vw;padding:22px}.topbar{display:block;padding-left:54px}.actions{justify-content:flex-start;margin-top:12px}.actions .btn{flex:1;justify-content:center}.col-8,.col-6,.col-4,.col-3,.col-2{grid-column:span 12}.totals{grid-template-columns:1fr}.pdfsheet{padding:14px}.pdf-head{display:block}.pdf-title{text-align:left;margin-top:12px}.data-table{min-width:760px}main{padding:12px}.card{padding:14px}.quick-audio{left:12px;right:12px;justify-content:center}}
     @media print{aside,.topbar,.no-print{display:none!important}main{padding:0}.card{box-shadow:none;border:0}.pdfsheet{box-shadow:none;border:0;max-width:100%;padding:0}.app{display:block;background:#fff}}
+  
+
+    /* ================== AJUSTE FINAL DE USABILIDADE ================== */
+    :root{
+      --navy:#1f2937; --navy2:#374151; --ink:#111827; --muted:#6b7280; --bg:#f3f4f6; --card:#ffffff;
+      --line:#d1d5db; --green:#166534; --red:#991b1b; --gold:#4b5563; --blue:#1f2937;
+      --radius:14px; --shadow:0 8px 24px rgba(15,23,42,.08);
+    }
+    body{background:#f3f4f6}
+    .app,.app.menu-collapsed{display:block;min-height:100vh}
+    aside,.menu-toggle,.quick-audio{display:none!important}
+    main{max-width:1180px;margin:0 auto;padding:16px 14px 84px}
+    .topbar{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);align-items:flex-start;margin-bottom:12px}
+    .topbar h2{font-size:20px}.topbar p{font-size:12px}.actions{gap:8px}
+    .btn{background:#f3f4f6;color:#111827;border:1px solid #d1d5db;box-shadow:none;border-radius:10px;padding:10px 12px}
+    .btn.primary,.btn.green,.btn.blue,.btn.gold{background:#1f2937;color:#fff;border-color:#1f2937}
+    .btn.red{background:#fff;color:#991b1b;border-color:#fecaca}
+    .btn.recording{background:#991b1b;color:#fff;border-color:#991b1b}
+    .card{box-shadow:var(--shadow);border-radius:16px}.card h3{color:#1f2937}
+    .top-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 14px 0;position:sticky;top:0;z-index:80;background:#f3f4f6;padding:4px 0 8px}
+    .top-tabs .navbtn{background:#fff;color:#1f2937;border:1px solid #d1d5db;border-radius:12px;justify-content:center;text-align:center;padding:12px 8px;font-size:13px;box-shadow:0 4px 14px rgba(15,23,42,.06)}
+    .top-tabs .navbtn.active{background:#1f2937;color:#fff;border-color:#1f2937}
+    .data-table th,.pdf-bar{background:#1f2937}.totalbox.grand{background:#fff;border:2px solid #166534}.totalbox.grand b{color:#166534}
+    .main-audio-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+    .main-audio-actions .btn,.main-audio-actions label{justify-content:center;width:100%}
+    .secondary-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .danger-note,.ok-note{background:#f9fafb;border-color:#e5e7eb;color:#374151}
+    @media(max-width:760px){
+      main{padding:10px 10px 88px}.topbar{display:block}.topbar .actions{display:grid;grid-template-columns:1fr 1fr;margin-top:10px}.topbar .actions .btn{width:100%;justify-content:center}
+      .top-tabs{position:fixed;left:0;right:0;bottom:0;top:auto;grid-template-columns:repeat(5,1fr);gap:0;background:#fff;border-top:1px solid #d1d5db;padding:5px;z-index:1300;box-shadow:0 -8px 20px rgba(15,23,42,.08)}
+      .top-tabs .navbtn{border:0;box-shadow:none;border-radius:10px;font-size:11px;padding:9px 4px;flex-direction:column;gap:4px}.top-tabs .navbtn i{font-size:15px}
+      .main-audio-actions{grid-template-columns:1fr}.card{padding:12px}.grid{gap:10px}.topbar h2{font-size:18px}.actions .btn{flex:unset}.data-table{min-width:720px}
+    }
+
   </style>
 </head>
 <body>
@@ -61,14 +95,20 @@
     <div class="topbar no-print">
       <div><h2 id="screenTitle">Dados do orçamento</h2><p>Modelo visual baseado no PDF da S.O.S. Valêncio enviado como referência.</p></div>
       <div class="actions">
-        <button class="btn primary" onclick="App.goAudio()"><i class="fa-solid fa-microphone-lines"></i> Áudio direto</button>
-        <button class="btn" onclick="App.toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
-        <button class="btn" onclick="App.newBudget()"><i class="fa-solid fa-plus"></i> Novo</button><button class="btn red" onclick="App.clearBudget()"><i class="fa-solid fa-broom"></i> Limpar orçamento</button>
-        <button class="btn blue" onclick="App.saveLocal(true)"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
-        <button class="btn gold" onclick="App.exportJSON()"><i class="fa-solid fa-file-export"></i> JSON</button>
-        <button class="btn green" onclick="App.generatePDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
-        <button class="btn primary" onclick="App.openWhatsApp()"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+        <button class="btn" onclick="App.newBudget()"><i class="fa-solid fa-plus"></i> Novo</button>
+        <button class="btn red" onclick="App.clearBudget()"><i class="fa-solid fa-broom"></i> Limpar</button>
+        <button class="btn primary" onclick="App.saveLocal(true)"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
+        <button class="btn primary" onclick="App.show('secPreview','Preview do orçamento')"><i class="fa-solid fa-eye"></i> Preview</button>
+        <button class="btn primary" onclick="App.generatePDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
       </div>
+    </div>
+
+    <div class="top-tabs no-print">
+      <button class="navbtn" data-target="secAudio"><i class="fa-solid fa-microphone-lines"></i><span>Áudio</span></button>
+      <button class="navbtn" data-target="secItens"><i class="fa-solid fa-screwdriver-wrench"></i><span>Orçamento</span></button>
+      <button class="navbtn" data-target="secDados"><i class="fa-solid fa-clipboard-list"></i><span>Dados</span></button>
+      <button class="navbtn" data-target="secPreview"><i class="fa-solid fa-eye"></i><span>Preview</span></button>
+      <button class="navbtn" data-target="secConfig"><i class="fa-solid fa-gear"></i><span>Config</span></button>
     </div>
 
     <section id="secDados" class="section active">
@@ -98,14 +138,14 @@
     <section id="secAudio" class="section">
       <div class="grid">
         <div class="card col-8"><h3><i class="fa-solid fa-microphone-lines"></i> Preenchimento inteligente por áudio</h3>
-          <div class="actions" style="justify-content:flex-start;margin-bottom:14px"><button id="recordBtn" class="btn red" onclick="App.Audio.toggle()"><i class="fa-solid fa-microphone"></i> Gravar áudio</button><label class="btn blue" for="audioFile"><i class="fa-solid fa-upload"></i> Enviar áudio</label><input id="audioFile" class="hidden" type="file" accept="audio/*" onchange="App.Audio.upload(this)"><button class="btn green" onclick="App.AI.processText()"><i class="fa-solid fa-wand-magic-sparkles"></i> IA preencher orçamento</button><button class="btn" onclick="App.clearItems()"><i class="fa-solid fa-eraser"></i> Limpar peças/serviços</button></div>
-          <div class="drop"><b>Como falar:</b><p class="muted">Diga cliente, veículo, placa, defeito, diagnóstico, serviços com TMO/valor hora/desconto e peças com quantidade/valor unitário.</p></div>
+          <div class="main-audio-actions"><button id="recordBtn" class="btn primary" onclick="App.Audio.toggle()"><i class="fa-solid fa-microphone"></i> Gravar áudio</button><label class="btn" for="audioFile"><i class="fa-solid fa-upload"></i> Enviar áudio</label><input id="audioFile" class="hidden" type="file" accept="audio/*" onchange="App.Audio.upload(this)"><button class="btn primary" onclick="App.AI.processText()"><i class="fa-solid fa-wand-magic-sparkles"></i> Aplicar texto</button></div>
+          <div class="drop"><b>Como falar:</b><p class="muted">Ex.: “Kit junta tampa de válvula 383, tampa de válvula usada 400, dois discos de freio 640, jogo de pastilha 293 e serviço 500.”</p></div>
           <label style="margin-top:14px">Texto transcrito / comando manual</label><textarea id="audioText" style="min-height:150px" placeholder="A transcrição aparecerá aqui. Você também pode colar ou digitar um comando e clicar em IA preencher orçamento."></textarea>
           <label class="checkline"><input type="checkbox" id="aiAppendAudio" checked> Cada novo áudio ADICIONA ao orçamento atual</label>
           <label class="checkline"><input type="checkbox" id="aiReplaceItems"> Reprocessar texto manual substituindo peças/serviços atuais</label>
           <label class="checkline"><input type="checkbox" id="aiUppercase" checked> Padronizar cliente, veículo, peças e serviços em MAIÚSCULO</label>
           <label class="checkline"><input type="checkbox" id="aiStrict"> Filtro ultra rígido: descartar item que a IA escreveu diferente do áudio</label>
-          <div class="danger-note">VERSÃO 10.13 - Modo fiel: serviço sempre usa valor total falado, sem hora/TMO. Se o áudio disser “R$400,00 ... serviço”, esse R$400,00 vence qualquer JSON errado da IA.</div>
+          <div class="secondary-tools"><button class="btn" onclick="App.clearItems()"><i class="fa-solid fa-eraser"></i> Limpar peças/serviços</button><button class="btn" onclick="App.show('secItens','Peças e serviços')"><i class="fa-solid fa-table"></i> Revisar itens</button><button class="btn" onclick="App.show('secPreview','Preview do orçamento')"><i class="fa-solid fa-eye"></i> Ver preview</button></div><div class="ok-note">Modo fiel: valores de serviço entram como total. Peças com quantidade usam valor total, exceto quando você disser “cada” ou “unitário”.</div>
         </div>
         <div class="card col-4"><h3><i class="fa-solid fa-list-check"></i> Retorno da IA</h3><div id="aiReturn" class="transcript">Aguardando áudio ou texto...</div><button class="btn primary" style="width:100%;justify-content:center;margin-top:12px" onclick="App.useExampleVoice()"><i class="fa-solid fa-vial"></i> Testar com exemplo</button></div>
         <div class="card col-12"><h3><i class="fa-solid fa-circle-info"></i> Modelo de comando bom</h3><div class="transcript">Cliente 52 BPM Polícia Militar, CNPJ 04.198.514/0071-67, veículo Renault Duster placa FBO3E02, ano 2020, km 241601. Defeito reclamado checklist completo para diagnóstico. Diagnóstico técnico bateria fraca e bicos sujos. Adicionar serviço mecânica substituir bateria, TMO 0,30, valor hora 152,25, desconto 29. Adicionar serviço injeção limpar bicos injetores, TMO 1,50, valor hora 166,36, desconto 29. Adicionar peça bateria 60 amperes, quantidade 1, valor 420 reais.</div></div>
@@ -284,7 +324,26 @@ partKey(p){
       const key=window.SOS_CONFIG.GROQ_API_KEY;
       if(!key||key.includes('COLE_')){App.$('aiReturn').textContent='Sem chave Groq. Aplicando parser local.';this.applyData(this.localParse(text),text,opts);return;}
       App.$('aiReturn').textContent='IA analisando texto fielmente...';
-      const schema='Retorne SOMENTE JSON válido, sem markdown, no formato {"campos":{"cliente":"","cpfCnpj":"","telefone":"","veiculo":"","placa":"","ano":"","km":"","chassi":"","prefixo":"","fiscalContrato":"","defeito":"","diagnostico":""},"servicos":[{"cod":"","secao":"MECANICA","sistema":"","descricao":"","tmo":0,"valorHora":0,"valorTotal":0,"desc":0}],"pecas":[{"cod":"","descricao":"","fornecedor":"","qtd":1,"valorUnit":0,"desc":0}]}. REGRAS: 1) Seja fiel ao texto. Não invente cliente, veículo, peça, serviço ou valor. 2) Serviço/mão de obra deve ser extraído quando o texto disser claramente um trabalho, mesmo sem usar a palavra serviço: TROCAR, SUBSTITUIR, REMOVER, INSTALAR, REMOVER E INSTALAR, LIMPAR, HIGIENIZAR, POLIR, ALINHAR, BALANCEAR, REVISAR, CONSERTAR, RECUPERAR, REGULAR, DIAGNOSTICAR. 3) Peça/material/produto deve ser extraído quando o texto citar item físico com quantidade/valor ou quando disser peça/material/produto. 4) Nunca crie descrição genérica como ITEM, PEÇA ou MECÂNICA. Use SERVIÇO/MÃO DE OBRA só se o texto disser literalmente serviço/mão de obra com valor, exemplo "serviço 500"; nesse caso coloque descrição SERVIÇO e valorTotal 500. 5) Se falar valor total do serviço, coloque em valorTotal. Se falar valor hora, coloque em valorHora. Se não houver valor, use 0. 6) Se falar desconto, coloque desc. 7) Tudo em MAIÚSCULO. 8) Não use dados de exemplo nem orçamento anterior. 9) Em novo áudio, devolva apenas o que apareceu neste texto.';
+      const schema = `Retorne SOMENTE JSON válido, sem markdown, no formato:
+{
+  "campos":{"cliente":"","cpfCnpj":"","telefone":"","veiculo":"","placa":"","ano":"","km":"","chassi":"","prefixo":"","fiscalContrato":"","defeito":"","diagnostico":""},
+  "servicos":[{"cod":"","secao":"MECANICA","sistema":"","descricao":"","tmo":0,"valorHora":0,"valorTotal":0,"desc":0}],
+  "pecas":[{"cod":"","descricao":"","fornecedor":"","qtd":1,"valorUnit":0,"desc":0}]
+}
+
+REGRAS ABSOLUTAS:
+1) Seja fiel ao texto. Não invente cliente, veículo, peça, serviço ou valor.
+2) Serviço/mão de obra deve ser extraído quando o texto disser claramente um trabalho: TROCAR, SUBSTITUIR, REMOVER, INSTALAR, LIMPAR, HIGIENIZAR, POLIR, ALINHAR, BALANCEAR, REVISAR, CONSERTAR, RECUPERAR, REGULAR, DIAGNOSTICAR, REPARAR, CORRIGIR, SOLDAR, PINTAR.
+3) Use SERVIÇO somente se o texto disser literalmente serviço/mão de obra com valor. Exemplo: "serviço 500" => descricao "SERVIÇO", valorTotal 500, tmo 0, valorHora 0.
+4) Se falar valor total do serviço, coloque em valorTotal. Se falar valor hora/TMO, coloque em valorHora e tmo. Se não houver valor, use 0.
+5) Peça/material/produto deve ser extraído quando o texto citar item físico com quantidade e valor.
+6) REGRA CRÍTICA DE PEÇAS COM QUANTIDADE E VALOR: quando o texto disser "dois discos de freio 640", "2 discos de freio 640", "par de discos 640", considere 640 como VALOR TOTAL DO CONJUNTO, não como valor unitário. Retorne qtd 2 e valorUnit 320.
+7) Só considere valor cheio como unitário quando o texto disser claramente: "cada", "cada um", "cada peça", "unitário", "por unidade", "por peça". Exemplo: "dois discos de freio 640 cada" => qtd 2 e valorUnit 640.
+8) "jogo", "kit" e "par" sem a palavra "cada" são tratados como conjunto total. Ex.: "jogo de pastilha 293" => qtd 1 e valorUnit 293.
+9) Se falar desconto, coloque desc.
+10) Tudo em MAIÚSCULO.
+11) Não use dados de exemplo nem orçamento anterior.
+12) Em novo áudio, devolva apenas o que apareceu neste texto.`;
       try{
         const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify({model:window.SOS_CONFIG.GROQ_CHAT_MODEL||'openai/gpt-oss-20b',temperature:0,messages:[{role:'system',content:'Você é um extrator fiel de orçamento automotivo. Extraia o que foi dito. Não complete por suposição, mas não descarte serviços reais quando forem ditos por verbos de trabalho.'},{role:'user',content:schema+'\nTEXTO REAL DO ÁUDIO/COMANDO:\n'+text}]})});
         const data=await res.json();if(!res.ok)throw new Error(data.error?.message||'Erro na IA');
