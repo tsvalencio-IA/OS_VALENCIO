@@ -186,7 +186,22 @@ const App = {
   newBudget(){if(!confirm('Criar orçamento novo? O orçamento atual será substituído na tela.'))return;this.resetBudgetFields(true);this.saveLocal(true);},
   normText(v,upper=true){let x=String(v||'').replace(/\s+/g,' ').trim();return upper?x.toUpperCase():x;},
   serviceKey(s){return this.normText((s.secao||'')+'|'+(s.descricao||''),true);},
-  partKey(p){return this.normText((p.descricao||'')+'|'+(p.fornecedor||''),true);},
+partKey(p){
+  const normal = (txt) => this.normText(txt||'',true)
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\b(DE|DA|DO|DAS|DOS|A|O|AS|OS|E|EM|NA|NO|NAS|NOS|AOS|AO)\b/g,' ')
+    .replace(/\bJUNTOS\b/g,'JUNTO')
+    .replace(/\bTAMPAS\b/g,'TAMPA')
+    .replace(/\bVALVULAS\b/g,'VALVULA')
+    .replace(/\bDISCOS\b/g,'DISCO')
+    .replace(/\bPASTILHAS\b/g,'PASTILHA')
+    .replace(/\bUSADAS\b/g,'USADA')
+    .replace(/\bFREIOS\b/g,'FREIO')
+    .replace(/\s+/g,' ')
+    .trim();
+
+  return normal(p.descricao||'')+'|'+normal(p.fornecedor||'');
+},
   addService(s={}){const upper=!(this.$('aiUppercase')&&!this.$('aiUppercase').checked);let tmo=this.num(s.tmo)||0;let valorHora=this.num(s.valorHora??s.valor_hora??s.valorUnit??0)||0;let valorTotal=this.num(s.valorTotal??s.valor_total??s.total??s.valor??0)||0;if(tmo<=0&&valorHora>0)tmo=1;let descricao=this.normText(s.descricao||'',upper);if(!descricao&&valorTotal>0)descricao='SERVIÇO';const obj={cod:this.normText(s.cod||'',true),secao:this.normText(s.secao||'MECANICA',true),sistema:this.normText(s.sistema||'MECANICA E ELETRICA GERAL EM VEICULOS PEQUENOS E MEDIOS\nTipo: CARRO',upper),descricao,tmo,valorHora,valorTotal,desc:this.num(s.desc)||0};if(!obj.descricao)return;const k=this.serviceKey(obj);const old=this.state.services.find(x=>this.serviceKey(x)===k);if(old){if(obj.cod)old.cod=obj.cod;if(obj.sistema)old.sistema=obj.sistema;if(obj.tmo>0)old.tmo=obj.tmo;if(obj.valorHora>0){old.valorHora=obj.valorHora;old.valorTotal=0;}if(obj.valorTotal>0)old.valorTotal=obj.valorTotal;if(obj.desc>0)old.desc=obj.desc;this.renderServices();this.updateTotals();this.saveLocal(false);return;}this.state.services.push(obj);this.renderServices();this.updateTotals();this.saveLocal(false);},
   addQuickService(){this.addService({descricao:'NOVO SERVIÇO',tmo:1,valorHora:120,desc:0});},
   removeService(i){this.state.services.splice(i,1);this.renderAll();this.saveLocal(false);},
