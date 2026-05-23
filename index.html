@@ -348,6 +348,57 @@ partKey(p){
       const d=this.plain(desc);
       return this.badDesc(desc)||/\b(SERVICO|MAO\s+DE\s+OBRA|MAO|OBRA)\b/.test(d);
     },
+    partSegment(desc, source){
+  const chunks = String(source||'')
+    .split(/[;\n]|,(?!\d)/)
+    .map(x=>x.trim())
+    .filter(Boolean);
+
+  const words = this.words(desc);
+  if(!chunks.length || !words.length) return String(source||'');
+
+  let best = chunks[0];
+  let bestHits = -1;
+
+  chunks.forEach(chunk=>{
+    const plainChunk = this.plain(chunk);
+    const hits = words.filter(w=>plainChunk.includes(w)).length;
+    if(hits > bestHits){
+      bestHits = hits;
+      best = chunk;
+    }
+  });
+
+  return best || String(source||'');
+},
+
+normalizePartItem(item, source){
+  const p = Object.assign({}, item || {});
+  const desc = String(p.descricao || '').trim();
+
+  let qtd = App.num(p.qtd) || 1;
+  let valorAtual = App.num(p.valorUnit ?? p.valor_unitario ?? p.valor ?? 0) || 0;
+
+  const trecho = this.partSegment(desc, source);
+
+  const falouCada = /\b(cada|cada\s+um|cada\s+uma|unit[aá]rio|unit[aá]ria|por\s+unidade|por\s+pe[cç]a|valor\s*(unit[aá]rio|un))\b/i.test(trecho);
+
+  const valorFalado =
+    this.valueFrom(trecho, 'valor\\s*(?:unit[aá]rio|un|da\\s*pe[cç]a)?|unit[aá]rio|por') ||
+    this.trailingMoney(trecho, true) ||
+    valorAtual;
+
+  p.qtd = qtd;
+
+  if(valorFalado > 0 && qtd > 1 && !falouCada){
+    p.valorUnit = valorFalado / qtd;
+  } else {
+    p.valorUnit = valorFalado;
+  }
+
+  return p;
+},
+    
     mergeSupplement(json,local){
   json=json||{};
   json.campos=Object.assign({},local.campos||{},json.campos||{});
@@ -395,7 +446,17 @@ partKey(p){
       const c=json.campos||{};Object.entries(c).forEach(([k,v])=>{if(v!==undefined&&v!==null&&String(v).trim()&&App.$(k)){let val=String(v).trim();if(upper&&['cliente','veiculo','placa','prefixo','fiscalContrato','defeito','diagnostico'].includes(k))val=val.toUpperCase();App.$(k).value=val}});
       let rejected=[];
       (json.servicos||[]).forEach(raw=>{const s=this.normalizeServiceItem(raw,sourceText);const desc=String(s.descricao||'').trim();const generic=this.genericServiceAllowed(s,sourceText);if((this.badDesc(desc)&&!generic)||(!generic&&!this.hasItemEvidence(s,sourceText,'servico',strict))){if(desc)rejected.push('SERVIÇO IGNORADO SEM EVIDÊNCIA NO ÁUDIO: '+desc);return;}App.addService(s);});
-      (json.pecas||[]).forEach(p=>{const desc=String(p.descricao||'').trim();if(this.badPartDesc(desc)||!this.hasItemEvidence(p,sourceText,'peca',strict)){if(desc)rejected.push('PEÇA IGNORADA SEM EVIDÊNCIA NO ÁUDIO: '+desc);return;}App.addPart(p);});
+     (json.pecas||[]).forEach(raw=>{
+  const p = this.normalizePartItem(raw, sourceText);
+  const desc = String(p.descricao||'').trim();
+
+  if(this.badPartDesc(desc)||!this.hasItemEvidence(p,sourceText,'peca',strict)){
+    if(desc)rejected.push('PEÇA IGNORADA SEM EVIDÊNCIA NO ÁUDIO: '+desc);
+    return;
+  }
+
+  App.addPart(p);
+});
       App.renderAll();App.saveLocal(true);if(rejected.length)App.$('aiReturn').textContent+=(App.$('aiReturn').textContent?'\n\n':'')+'ITENS BLOQUEADOS PELO MODO FIEL:\n'+rejected.join('\n');
     },
     inferSection(desc,all){
