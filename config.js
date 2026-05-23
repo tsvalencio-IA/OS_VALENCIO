@@ -4,7 +4,7 @@
   Para produção com segurança máxima, use proxy serverless/backend. Para MVP rápido, este arquivo funciona como você pediu.
 */
 window.SOS_CONFIG = {
-  GROQ_API_KEY: "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",
+  GROQ_API_KEY: "COLE_SUA_CHAVE_GROQ_AQUI",
   GROQ_TRANSCRIPTION_MODEL: "whisper-large-v3-turbo",
   GROQ_CHAT_MODEL: "openai/gpt-oss-20b",
   OFFICE: {
