@@ -16,3 +16,7 @@ Fluxo recomendado:
 6. Gere PDF ou envie resumo pelo WhatsApp.
 
 Observação: em GitHub Pages, qualquer chave colocada em config.js fica visível no navegador. Para uso interno/MVP funciona, mas para produção use proxy/backend.
+
+
+## Chave Groq
+A chave foi movida para `js/api.js` conforme solicitado. O `config.js` fica sem a chave real.
