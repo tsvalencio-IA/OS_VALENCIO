@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnóstico TBI - Versailles / Sistema Monoponto</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --card2: #1f2937;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --green: #22c55e;
+      --yellow: #facc15;
+      --orange: #fb923c;
+      --red: #ef4444;
+      --blue: #38bdf8;
+      --border: #374151;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      color: var(--text);
+    }
+
+    header {
+      padding: 22px;
+      background: #020617;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      color: var(--blue);
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: static !important;
+      }
+    }
+
+    section, aside {
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    }
+
+    aside {
+      height: fit-content;
+      position: sticky;
+      top: 96px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-top: 0;
+      color: var(--blue);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #e5e7eb;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 5px;
+      color: #e5e7eb;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 11px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .radio-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .radio-option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: var(--card2);
+      padding: 10px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .radio-option:hover {
+      border-color: var(--blue);
+    }
+
+    .radio-option input {
+      width: auto;
+      margin-top: 3px;
+    }
+
+    .radio-option span {
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .danger {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #fecaca;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 12px 0;
+      line-height: 1.45;
+    }
+
+    .warning {
+      background: rgba(250, 204, 21, 0.12);
+      border: 1px solid rgba(250, 204, 21, 0.5);
+      color: #fef3c7;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 12px 0;
+      line-height: 1.45;
+    }
+
+    .ok {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      color: #bbf7d0;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 12px 0;
+      line-height: 1.45;
+    }
+
+    .result-box {
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    .score-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    .bar {
+      height: 9px;
+      background: #374151;
+      border-radius: 999px;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: var(--green);
+      transition: 0.25s;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #020617;
+      background: var(--blue);
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+    }
+
+    button.danger-btn {
+      background: var(--red);
+      color: white;
+    }
+
+    .small-btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      margin: 3px 4px 3px 0;
+    }
+
+    .badge.red {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fecaca;
+      border: 1px solid rgba(239, 68, 68, 0.5);
+    }
+
+    .badge.yellow {
+      background: rgba(250, 204, 21, 0.2);
+      color: #fef3c7;
+      border: 1px solid rgba(250, 204, 21, 0.5);
+    }
+
+    .badge.green {
+      background: rgba(34, 197, 94, 0.2);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+    }
+
+    .badge.blue {
+      background: rgba(56, 189, 248, 0.2);
+      color: #bae6fd;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      margin-top: 14px;
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+
+      header, button, .no-print {
+        display: none !important;
+      }
+
+      main {
+        display: block;
+        max-width: 100%;
+        padding: 0;
+      }
+
+      section, aside {
+        background: white;
+        color: black;
+        border: 1px solid #999;
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+
+      input, select, textarea {
+        color: black;
+        background: white;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Doutor IA Automotivo — Diagnóstico TBI Versailles</h1>
+    <p>Formulário inteligente para partida difícil: “com plug do TBI ligado não pega; desligando o plug pega”.</p>
+  </header>
+
+  <main>
+    <div>
+      <section>
+        <h2>1. Identificação do veículo</h2>
+
+        <div class="row">
+          <div>
+            <label>Marca / modelo</label>
+            <input id="veiculo" value="Ford Versailles" />
+          </div>
+
+          <div>
+            <label>Ano</label>
+            <input id="ano" placeholder="Ex: 1994" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Motor</label>
+            <select id="motor">
+              <option value="">Selecione</option>
+              <option>1.8</option>
+              <option>2.0</option>
+              <option>Não sei</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Combustível</label>
+            <select id="combustivel">
+              <option value="">Selecione</option>
+              <option>Gasolina</option>
+              <option>Álcool / Etanol</option>
+              <option>Flex adaptado</option>
+              <option>Não sei</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Quilometragem</label>
+            <input id="km" placeholder="Ex: 180000" />
+          </div>
+
+          <div>
+            <label>Defeito é constante ou intermitente?</label>
+            <select id="frequencia">
+              <option value="">Selecione</option>
+              <option>Constante</option>
+              <option>Intermitente</option>
+              <option>Só frio</option>
+              <option>Só quente</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Histórico recente</label>
+        <textarea id="historico" placeholder="Ex: sensor de temperatura quebrado foi trocado, mexeu no chicote, limpou TBI, trocou bomba etc."></textarea>
+      </section>
+
+      <section>
+        <h2>2. Sintoma principal</h2>
+
+        <label>Com o plug eletrônico do TBI conectado:</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="plugLigado" value="nao_pega" />
+            <span>Motor gira, mas não pega.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="plugLigado" value="pega_mal" />
+            <span>Pega ruim, falha, afoga ou morre.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="plugLigado" value="pega_normal" />
+            <span>Pega normal.</span>
+          </label>
+        </div>
+
+        <label>Com o plug eletrônico do TBI desconectado:</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="plugDesligado" value="pega" />
+            <span>Motor pega.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="plugDesligado" value="ameaca" />
+            <span>Só ameaça pegar.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="plugDesligado" value="nao_pega" />
+            <span>Não pega.</span>
+          </label>
+        </div>
+
+        <label>Quando pega com o plug desligado, ele:</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="comportamentoDesligado" value="fica_funcionando" />
+            <span>Fica funcionando por alguns segundos ou minutos.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="comportamentoDesligado" value="pega_e_morre" />
+            <span>Pega e morre rápido.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="comportamentoDesligado" value="nao_observado" />
+            <span>Ainda não observei.</span>
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. Teste de afogamento pela vela</h2>
+
+        <div class="warning">
+          Procedimento: conecte o plug do TBI, dê partida por 5 segundos, desligue a chave e retire uma vela.
+        </div>
+
+        <label>Estado da vela após tentativa de partida com plug ligado:</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="vela" value="molhada" />
+            <span>Molhada de combustível / cheiro forte.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="vela" value="seca" />
+            <span>Seca.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="vela" value="carbonizada" />
+            <span>Preta, carbonizada, indício de mistura rica.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="vela" value="normal" />
+            <span>Aparência normal.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="vela" value="nao_testado" />
+            <span>Ainda não testado.</span>
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <h2>4. Teste visual do bico do TBI</h2>
+
+        <div class="danger">
+          Risco de incêndio. Não faça esse teste perto de faísca, cigarro, lâmpada quente ou cabo de vela escapando centelha.
+        </div>
+
+        <label>Com chave ligada e motor parado, o bico:</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="bicoParado" value="nao_pinga" />
+            <span>Não pinga.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="bicoParado" value="pinga" />
+            <span>Pinga combustível.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="bicoParado" value="esguicha" />
+            <span>Esguicha ou fica aberto direto.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="bicoParado" value="nao_testado" />
+            <span>Ainda não testado.</span>
+          </label>
+        </div>
+
+        <label>Durante a partida, o bico:</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="bicoPartida" value="pulveriza" />
+            <span>Pulveriza em spray.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="bicoPartida" value="jorra" />
+            <span>Jorra muito combustível.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="bicoPartida" value="nao_injeta" />
+            <span>Não injeta nada.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="bicoPartida" value="nao_testado" />
+            <span>Ainda não testado.</span>
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <h2>5. Linha de 5 V e curto no TBI/chicote</h2>
+
+        <p class="hint">
+          Meça a referência de 5 V dos sensores com a chave ligada. O objetivo é descobrir se o plug do TBI derruba a alimentação da central.
+        </p>
+
+        <div class="row">
+          <div>
+            <label>5 V com plug do TBI desligado</label>
+            <input id="v5Desligado" type="number" step="0.01" placeholder="Ex: 4.98" />
+          </div>
+
+          <div>
+            <label>5 V com plug do TBI ligado</label>
+            <input id="v5Ligado" type="number" step="0.01" placeholder="Ex: 0.20 ou 4.95" />
+          </div>
+        </div>
+
+        <label>Ao conectar o plug do TBI, a luz da injeção / sistema muda comportamento?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="quedaSistema" value="sim" />
+            <span>Sim, muda, apaga, falha ou dá comportamento estranho.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="quedaSistema" value="nao" />
+            <span>Não muda.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="quedaSistema" value="nao_testado" />
+            <span>Ainda não testado.</span>
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <h2>6. TPS — sensor de posição da borboleta</h2>
+
+        <div class="row">
+          <div>
+            <label>Tensão do TPS com borboleta fechada</label>
+            <input id="tpsFechado" type="number" step="0.01" placeholder="Ex: 0.55" />
+          </div>
+
+          <div>
+            <label>Tensão do TPS com borboleta aberta</label>
+            <input id="tpsAberto" type="number" step="0.01" placeholder="Ex: 4.20" />
+          </div>
+        </div>
+
+        <label>O sinal do TPS sobe liso ao acelerar?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="tpsLiso" value="sim" />
+            <span>Sim, sobe progressivamente.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="tpsLiso" value="nao" />
+            <span>Não. Pula, falha, zera ou fica travado.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="tpsLiso" value="nao_testado" />
+            <span>Ainda não testado.</span>
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <h2>7. Sensor de temperatura da injeção</h2>
+
+        <p class="hint">
+          Sensor novo não prova leitura correta. O que importa é o que a central está recebendo pelo chicote.
+        </p>
+
+        <div class="row">
+          <div>
+            <label>Temperatura ambiente aproximada</label>
+            <input id="tempAmbiente" type="number" step="1" placeholder="Ex: 25" />
+          </div>
+
+          <div>
+            <label>Temperatura lida no scanner, se tiver</label>
+            <input id="tempScanner" type="number" step="1" placeholder="Ex: -40, 25, 120" />
+          </div>
+        </div>
+
+        <label>Condição do conector do sensor de temperatura</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="conectorTemp" value="bom" />
+            <span>Bom, firme e limpo.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="conectorTemp" value="ruim" />
+            <span>Quebrado, oxidado, frouxo ou com emenda suspeita.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="conectorTemp" value="nao_testado" />
+            <span>Ainda não testado.</span>
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <h2>8. Ignição e rotação</h2>
+
+        <label>Centelha durante a partida</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="centelha" value="forte" />
+            <span>Forte e azulada.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="centelha" value="fraca" />
+            <span>Fraca, amarelada ou irregular.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="centelha" value="ausente" />
+            <span>Ausente.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="centelha" value="nao_testado" />
+            <span>Ainda não testado.</span>
+          </label>
+        </div>
+
+        <label>O motor de arranque gira normal?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="arranque" value="normal" />
+            <span>Gira normal.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="arranque" value="pesado" />
+            <span>Gira pesado / bateria fraca.</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="arranque" value="nao_testado" />
+            <span>Ainda não testado.</span>
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <h2>9. Códigos de falha e observações</h2>
+
+        <label>Códigos de falha, se houver</label>
+        <textarea id="codigos" placeholder="Ex: sensor de temperatura, TPS, mistura rica, atuador de lenta..."></textarea>
+
+        <label>Observações livres do mecânico</label>
+        <textarea id="obs" placeholder="Ex: cheiro forte de combustível, bico pinga, chicote mexido, motor pega com acelerador aberto etc."></textarea>
+      </section>
+    </div>
+
+    <aside>
+      <h2>Resultado inteligente</h2>
+
+      <div id="urgenciaBox" class="result-box">
+        Preencha os testes e clique em analisar.
+      </div>
+
+      <button onclick="analisar()">Analisar diagnóstico</button>
+
+      <div class="small-btn-row">
+        <button class="secondary" onclick="window.print()">Imprimir</button>
+        <button class="secondary" onclick="exportarJSON()">Exportar JSON</button>
+      </div>
+
+      <button class="danger-btn" onclick="limparTudo()">Limpar tudo</button>
+
+      <div id="resultado" class="result-box"></div>
+
+      <div class="footer-note">
+        Ferramenta de apoio lógico. Não condena peça sozinha. Código de falha, sintoma ou “achismo” não substitui teste de alimentação, aterramento, sinal, chicote e funcionamento.
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    function getRadio(name) {
+      const el = document.querySelector(`input[name="${name}"]:checked`);
+      return el ? el.value : "";
+    }
+
+    function getNumber(id) {
+      const value = document.getElementById(id).value;
+      if (value === "" || value === null) return null;
+      const n = Number(value);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function getText(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function addScore(scores, key, points, evidence) {
+      scores[key].score += points;
+      if (evidence) scores[key].evidence.push(evidence);
+    }
+
+    function analisar() {
+      const data = coletarDados();
+
+      const scores = {
+        afogamento: {
+          nome: "Afogamento / excesso de combustível",
+          score: 0,
+          evidence: [],
+          testes: [
+            "Confirmar vela molhada após tentativa de partida com plug do TBI ligado.",
+            "Observar se o bico do TBI pinga com chave ligada e motor parado.",
+            "Verificar se o bico pulveriza ou jorra durante a partida.",
+            "Conferir óleo do motor: se estiver com cheiro de combustível, não insistir na partida."
+          ],
+          correcao: [
+            "Corrigir somente após evidência: bico travado, pressão excessiva, comando elétrico direto ou leitura errada de sensores."
+          ]
+        },
+
+        bico: {
+          nome: "Bico injetor do TBI travado, pingando ou comandado direto",
+          score: 0,
+          evidence: [],
+          testes: [
+            "Com chave ligada e motor parado, o bico não pode pingar.",
+            "Durante partida, deve pulverizar em spray, sem jato contínuo.",
+            "Testar alimentação e pulso do bico com caneta de pulso/noid light/multímetro adequado.",
+            "Verificar se fio de comando do bico está em curto para negativo."
+          ],
+          correcao: [
+            "Limpeza, reparo ou troca do bico somente se confirmado vazamento, travamento ou resistência fora do padrão."
+          ]
+        },
+
+        chicote: {
+          nome: "Curto no chicote/conector do TBI ou queda da linha de 5 V",
+          score: 0,
+          evidence: [],
+          testes: [
+            "Medir referência de 5 V com o plug do TBI desligado e ligado.",
+            "Se a tensão cair ao conectar o TBI, isolar TPS, atuador e bico para descobrir quem derruba a linha.",
+            "Inspecionar pinos oxidados, terminais frouxos, emendas, fios esmagados e aterramentos.",
+            "Fazer teste de continuidade e curto para terra nos fios de sinal."
+          ],
+          correcao: [
+            "Reparar conector/chicote antes de trocar TBI ou módulo."
+          ]
+        },
+
+        tps: {
+          nome: "TPS com sinal errado, travado alto ou intermitente",
+          score: 0,
+          evidence: [],
+          testes: [
+            "Medir tensão do TPS com borboleta fechada.",
+            "Medir tensão com borboleta aberta.",
+            "A tensão deve subir de forma progressiva, sem buracos ou pulos.",
+            "Testar terra e referência de 5 V antes de condenar o TPS."
+          ],
+          correcao: [
+            "Ajustar, reparar chicote ou trocar TPS somente se o sinal estiver comprovadamente errado."
+          ]
+        },
+
+        temperatura: {
+          nome: "Leitura errada do sensor de temperatura da injeção",
+          score: 0,
+          evidence: [],
+          testes: [
+            "Comparar temperatura lida pela central com a temperatura ambiente em motor frio.",
+            "Leitura -40 °C sugere circuito aberto, fio rompido ou conector ruim.",
+            "Leitura muito alta com motor frio sugere curto.",
+            "Medir resistência do sensor e continuidade do chicote."
+          ],
+          correcao: [
+            "Sensor novo não resolve chicote quebrado. Corrigir conector/fiação se a leitura estiver errada."
+          ]
+        },
+
+        ignicao: {
+          nome: "Ignição fraca ou falha secundária junto com mistura rica",
+          score: 0,
+          evidence: [],
+          testes: [
+            "Testar centelha com ferramenta adequada.",
+            "Verificar cabos, tampa, rotor, bobina, aterramento e ponto.",
+            "Se a vela estiver molhada e a centelha fraca, corrigir ignição antes de insistir na partida."
+          ],
+          correcao: [
+            "Corrigir componente de ignição somente após confirmar falha de centelha."
+          ]
+        },
+
+        modulo: {
+          nome: "Módulo de injeção com comando incorreto",
+          score: 0,
+          evidence: [],
+          testes: [
+            "Só considerar módulo depois de testar bico, TPS, sensor de temperatura, 5 V, aterramentos e chicote.",
+            "Verificar se o comando do bico fica acionado direto mesmo com chicote bom e sensores isolados.",
+            "Conferir alimentação positiva e aterramentos da central sob carga."
+          ],
+          correcao: [
+            "Não trocar módulo sem comprovar alimentação, aterramento, chicote e atuadores."
+          ]
+        }
+      };
+
+      // Sintoma principal
+      if (data.plugLigado === "nao_pega" && data.plugDesligado === "pega") {
+        addScore(scores, "afogamento", 30, "Com o plug do TBI ligado não pega; desligando o plug pega.");
+        addScore(scores, "chicote", 20, "A mudança ocorre exatamente ao conectar/desconectar o plug do TBI.");
+        addScore(scores, "bico", 18, "Desligar o plug pode cortar bico/comando do TBI e permitir partida.");
+        addScore(scores, "tps", 10, "TPS ou circuito do TBI pode alterar estratégia de partida.");
+      }
+
+      if (data.plugLigado === "pega_mal") {
+        addScore(scores, "afogamento", 15, "Com plug ligado pega mal/falha, compatível com mistura incorreta.");
+        addScore(scores, "tps", 10, "Falha com plug ligado pode envolver sinal do TPS.");
+      }
+
+      if (data.comportamentoDesligado === "pega_e_morre") {
+        addScore(scores, "afogamento", 10, "Pega e morre com plug desligado pode indicar queima do combustível acumulado.");
+      }
+
+      if (data.comportamentoDesligado === "fica_funcionando") {
+        addScore(scores, "chicote", 12, "Motor consegue funcionar com o circuito do TBI desligado, reforçando falha no circuito conectado.");
+      }
+
+      // Vela
+      if (data.vela === "molhada") {
+        addScore(scores, "afogamento", 35, "Vela molhada após tentativa de partida confirma excesso de combustível ou falta de queima.");
+        addScore(scores, "bico", 22, "Vela molhada pode indicar bico pingando, jorrando ou comandado demais.");
+      }
+
+      if (data.vela === "carbonizada") {
+        addScore(scores, "afogamento", 22, "Vela preta/carbonizada indica histórico de mistura rica.");
+        addScore(scores, "temperatura", 8, "Leitura errada de temperatura pode enriquecer mistura.");
+      }
+
+      if (data.vela === "seca") {
+        addScore(scores, "bico", 10, "Vela seca muda o foco para falta de injeção ou falta de comando.");
+        addScore(scores, "chicote", 10, "Pode haver corte elétrico no circuito do TBI.");
+        scores.afogamento.score -= 20;
+      }
+
+      // Bico parado
+      if (data.bicoParado === "pinga") {
+        addScore(scores, "bico", 40, "Bico pinga com chave ligada e motor parado.");
+        addScore(scores, "afogamento", 30, "Bico pingando parado afoga o motor.");
+      }
+
+      if (data.bicoParado === "esguicha") {
+        addScore(scores, "bico", 50, "Bico esguicha/abre direto com motor parado.");
+        addScore(scores, "afogamento", 40, "Bico aberto direto gera afogamento severo.");
+        addScore(scores, "chicote", 20, "Comando direto pode ser curto no fio do bico ou falha de módulo.");
+        addScore(scores, "modulo", 8, "Módulo só entra como hipótese depois de eliminar chicote e bico.");
+      }
+
+      if (data.bicoParado === "nao_pinga") {
+        scores.bico.score -= 8;
+      }
+
+      // Bico partida
+      if (data.bicoPartida === "jorra") {
+        addScore(scores, "bico", 35, "Durante partida o bico jorra, em vez de pulverizar.");
+        addScore(scores, "afogamento", 30, "Jato excessivo durante partida indica mistura rica.");
+        addScore(scores, "temperatura", 8, "Leitura errada de temperatura pode aumentar tempo de injeção.");
+      }
+
+      if (data.bicoPartida === "nao_injeta") {
+        addScore(scores, "chicote", 18, "Bico não injeta durante partida; verificar alimentação, pulso e chicote.");
+        addScore(scores, "bico", 15, "Bico pode estar sem comando, travado fechado ou aberto eletricamente.");
+        scores.afogamento.score -= 15;
+      }
+
+      if (data.bicoPartida === "pulveriza") {
+        scores.bico.score -= 5;
+      }
+
+      // 5 V
+      if (data.v5Desligado !== null && data.v5Ligado !== null) {
+        if (data.v5Desligado >= 4.5 && data.v5Ligado < 4.2) {
+          addScore(scores, "chicote", 45, `Linha de 5 V cai de ${data.v5Desligado} V para ${data.v5Ligado} V ao ligar o plug do TBI.`);
+          addScore(scores, "tps", 18, "TPS pode estar derrubando a referência de 5 V.");
+          addScore(scores, "modulo", 5, "Se todos os consumidores forem isolados e a queda persistir, avaliar central.");
+        }
+
+        if (data.v5Desligado < 4.2) {
+          addScore(scores, "chicote", 25, `Referência de 5 V já está baixa com plug desligado: ${data.v5Desligado} V.`);
+        }
+
+        if (data.v5Desligado >= 4.7 && data.v5Ligado >= 4.7) {
+          scores.chicote.score -= 10;
+        }
+      }
+
+      if (data.quedaSistema === "sim") {
+        addScore(scores, "chicote", 25, "Sistema muda comportamento ao conectar o plug do TBI.");
+      }
+
+      // TPS
+      if (data.tpsFechado !== null) {
+        if (data.tpsFechado > 1.2) {
+          addScore(scores, "tps", 35, `TPS alto com borboleta fechada: ${data.tpsFechado} V.`);
+          addScore(scores, "afogamento", 8, "TPS alto pode alterar estratégia de partida.");
+        }
+
+        if (data.tpsFechado < 0.1) {
+          addScore(scores, "tps", 25, `TPS muito baixo/zerado com borboleta fechada: ${data.tpsFechado} V.`);
+          addScore(scores, "chicote", 12, "TPS zerado pode indicar curto, terra ruim ou sinal rompido.");
+        }
+      }
+
+      if (data.tpsAberto !== null && data.tpsFechado !== null) {
+        if (data.tpsAberto <= data.tpsFechado) {
+          addScore(scores, "tps", 35, "TPS não aumenta ao abrir a borboleta.");
+        }
+
+        if (data.tpsAberto < 3.0) {
+          addScore(scores, "tps", 12, `TPS aberto abaixo do esperado: ${data.tpsAberto} V.`);
+        }
+      }
+
+      if (data.tpsLiso === "nao") {
+        addScore(scores, "tps", 35, "Sinal do TPS falha, pula ou fica travado.");
+      }
+
+      if (data.tpsLiso === "sim" && data.tpsFechado !== null && data.tpsFechado >= 0.3 && data.tpsFechado <= 1.0) {
+        scores.tps.score -= 15;
+      }
+
+      // Temperatura
+      if (data.tempScanner !== null) {
+        if (data.tempScanner <= -30) {
+          addScore(scores, "temperatura", 45, `Temperatura lida muito baixa: ${data.tempScanner} °C. Indica circuito aberto ou conector/fio ruim.`);
+          addScore(scores, "afogamento", 18, "Leitura muito fria pode enriquecer demais a partida.");
+        }
+
+        if (data.tempScanner >= 100 && data.tempAmbiente !== null && data.tempAmbiente < 40) {
+          addScore(scores, "temperatura", 45, `Temperatura lida muito alta com motor frio: ${data.tempScanner} °C.`);
+        }
+
+        if (data.tempAmbiente !== null) {
+          const diff = Math.abs(data.tempScanner - data.tempAmbiente);
+          if (diff > 20 && data.tempScanner > -20 && data.tempScanner < 100) {
+            addScore(scores, "temperatura", 20, `Diferença grande entre ambiente e leitura: ${diff} °C.`);
+          }
+
+          if (diff <= 10) {
+            scores.temperatura.score -= 10;
+          }
+        }
+      }
+
+      if (data.conectorTemp === "ruim") {
+        addScore(scores, "temperatura", 28, "Conector do sensor de temperatura está ruim/oxidado/frouxo.");
+        addScore(scores, "chicote", 12, "Conector ruim pode gerar leitura falsa para a central.");
+      }
+
+      // Ignição
+      if (data.centelha === "fraca") {
+        addScore(scores, "ignicao", 35, "Centelha fraca ou amarelada.");
+        addScore(scores, "afogamento", 8, "Centelha fraca pode molhar vela e parecer excesso de combustível.");
+      }
+
+      if (data.centelha === "ausente") {
+        addScore(scores, "ignicao", 50, "Centelha ausente.");
+        scores.afogamento.score -= 10;
+      }
+
+      if (data.centelha === "forte") {
+        scores.ignicao.score -= 15;
+      }
+
+      if (data.arranque === "pesado") {
+        addScore(scores, "ignicao", 12, "Partida pesada pode reduzir tensão e prejudicar ignição/injeção.");
+      }
+
+      // Texto livre
+      const textoLivre = `${data.historico} ${data.codigos} ${data.obs}`.toLowerCase();
+
+      if (textoLivre.includes("cheiro") || textoLivre.includes("combustivel") || textoLivre.includes("combustível") || textoLivre.includes("afog")) {
+        addScore(scores, "afogamento", 15, "Observação menciona cheiro de combustível/afogamento.");
+      }
+
+      if (textoLivre.includes("temperatura")) {
+        addScore(scores, "temperatura", 8, "Histórico menciona sensor de temperatura.");
+      }
+
+      if (textoLivre.includes("tps")) {
+        addScore(scores, "tps", 8, "Histórico/código menciona TPS.");
+      }
+
+      if (textoLivre.includes("chicote") || textoLivre.includes("fio") || textoLivre.includes("conector") || textoLivre.includes("emenda")) {
+        addScore(scores, "chicote", 15, "Histórico menciona chicote/conector/fiação.");
+      }
+
+      if (textoLivre.includes("bico") || textoLivre.includes("injetor")) {
+        addScore(scores, "bico", 10, "Histórico menciona bico/injetor.");
+      }
+
+      // Garantir mínimo 0
+      Object.keys(scores).forEach(k => {
+        if (scores[k].score < 0) scores[k].score = 0;
+      });
+
+      const ordenado = Object.entries(scores)
+        .sort((a, b) => b[1].score - a[1].score);
+
+      renderResultado(data, ordenado);
+      salvarLocal();
+    }
+
+    function coletarDados() {
+      return {
+        veiculo: getText("veiculo"),
+        ano: getText("ano"),
+        motor: document.getElementById("motor").value,
+        combustivel: document.getElementById("combustivel").value,
+        km: getText("km"),
+        frequencia: document.getElementById("frequencia").value,
+        historico: getText("historico"),
+
+        plugLigado: getRadio("plugLigado"),
+        plugDesligado: getRadio("plugDesligado"),
+        comportamentoDesligado: getRadio("comportamentoDesligado"),
+
+        vela: getRadio("vela"),
+        bicoParado: getRadio("bicoParado"),
+        bicoPartida: getRadio("bicoPartida"),
+
+        v5Desligado: getNumber("v5Desligado"),
+        v5Ligado: getNumber("v5Ligado"),
+        quedaSistema: getRadio("quedaSistema"),
+
+        tpsFechado: getNumber("tpsFechado"),
+        tpsAberto: getNumber("tpsAberto"),
+        tpsLiso: getRadio("tpsLiso"),
+
+        tempAmbiente: getNumber("tempAmbiente"),
+        tempScanner: getNumber("tempScanner"),
+        conectorTemp: getRadio("conectorTemp"),
+
+        centelha: getRadio("centelha"),
+        arranque: getRadio("arranque"),
+
+        codigos: getText("codigos"),
+        obs: getText("obs")
+      };
+    }
+
+    function nivelCerteza(score) {
+      if (score >= 70) return "alto";
+      if (score >= 40) return "médio";
+      if (score > 0) return "baixo";
+      return "sem evidência";
+    }
+
+    function corBar(score) {
+      if (score >= 70) return "var(--red)";
+      if (score >= 40) return "var(--orange)";
+      if (score >= 20) return "var(--yellow)";
+      return "var(--green)";
+    }
+
+    function calcularUrgencia(data, topScore) {
+      let urgencia = "Média";
+      let classe = "warning";
+      let motivos = [];
+
+      if (
+        data.bicoParado === "pinga" ||
+        data.bicoParado === "esguicha" ||
+        data.vela === "molhada" ||
+        data.bicoPartida === "jorra"
+      ) {
+        urgencia = "Alta";
+        classe = "danger";
+        motivos.push("há forte risco de excesso de combustível e afogamento");
+      }
+
+      const textoLivre = `${data.historico} ${data.obs}`.toLowerCase();
+
+      if (
+        textoLivre.includes("vazamento") ||
+        textoLivre.includes("gasolina vazando") ||
+        textoLivre.includes("combustível vazando") ||
+        textoLivre.includes("fumaça") ||
+        textoLivre.includes("curto")
+      ) {
+        urgencia = "Crítica";
+        classe = "danger";
+        motivos.push("foi relatado possível vazamento, fumaça ou curto");
+      }
+
+      if (data.centelha === "ausente") {
+        motivos.push("centelha ausente precisa ser resolvida antes de insistir na partida");
+      }
+
+      if (topScore < 25 && urgencia !== "Crítica") {
+        urgencia = "Baixa a média";
+        classe = "warning";
+        motivos.push("ainda faltam testes decisivos");
+      }
+
+      return { urgencia, classe, motivos };
+    }
+
+    function renderResultado(data, ordenado) {
+      const top = ordenado[0][1];
+      const urg = calcularUrgencia(data, top.score);
+
+      document.getElementById("urgenciaBox").className = urg.classe;
+      document.getElementById("urgenciaBox").innerHTML = `
+        <strong>Urgência: ${urg.urgencia}</strong><br>
+        ${urg.motivos.length ? urg.motivos.join("; ") + "." : "Sem alerta crítico informado até agora."}
+      `;
+
+      let html = "";
+
+      html += `
+        <h3>Resumo técnico</h3>
+        <p>
+          <span class="badge blue">DADO REAL</span>
+          ${data.plugLigado === "nao_pega" && data.plugDesligado === "pega"
+            ? "Com o plug do TBI ligado o motor não pega; desligando o plug, pega."
+            : "Preencha o comportamento com plug ligado e desligado para fechar a linha principal."}
+        </p>
+      `;
+
+      html += `<h3>Hipóteses em ordem de evidência</h3>`;
+
+      ordenado.forEach(([key, item]) => {
+        const pct = Math.min(item.score, 100);
+        html += `
+          <div style="margin-bottom: 14px;">
+            <div class="score-line">
+              <strong>${item.nome}</strong>
+              <span>${item.score} pts</span>
+            </div>
+            <div class="bar">
+              <div class="bar-fill" style="width:${pct}%; background:${corBar(item.score)}"></div>
+            </div>
+            <div class="hint">Nível de certeza: <strong>${nivelCerteza(item.score)}</strong></div>
+          </div>
+        `;
+      });
+
+      const relevantes = ordenado.filter(([k, item]) => item.score >= 20).slice(0, 4);
+
+      html += `<h3>Dados reais usados</h3><ul>`;
+
+      if (data.plugLigado) html += `<li>Plug TBI ligado: ${traduz(data.plugLigado)}</li>`;
+      if (data.plugDesligado) html += `<li>Plug TBI desligado: ${traduz(data.plugDesligado)}</li>`;
+      if (data.vela) html += `<li>Estado da vela: ${traduz(data.vela)}</li>`;
+      if (data.bicoParado) html += `<li>Bico com chave ligada/motor parado: ${traduz(data.bicoParado)}</li>`;
+      if (data.bicoPartida) html += `<li>Bico durante partida: ${traduz(data.bicoPartida)}</li>`;
+      if (data.v5Desligado !== null) html += `<li>5 V com plug desligado: ${data.v5Desligado} V</li>`;
+      if (data.v5Ligado !== null) html += `<li>5 V com plug ligado: ${data.v5Ligado} V</li>`;
+      if (data.tpsFechado !== null) html += `<li>TPS fechado: ${data.tpsFechado} V</li>`;
+      if (data.tpsAberto !== null) html += `<li>TPS aberto: ${data.tpsAberto} V</li>`;
+      if (data.tempScanner !== null) html += `<li>Temperatura lida pela central: ${data.tempScanner} °C</li>`;
+      if (data.centelha) html += `<li>Centelha: ${traduz(data.centelha)}</li>`;
+
+      html += `</ul>`;
+
+      if (relevantes.length) {
+        html += `<h3>Testes recomendados agora</h3>`;
+
+        relevantes.forEach(([key, item], idx) => {
+          html += `
+            <p><span class="badge yellow">${idx + 1}</span> <strong>${item.nome}</strong></p>
+            <ul>
+              ${item.testes.map(t => `<li>${t}</li>`).join("")}
+            </ul>
+          `;
+        });
+      } else {
+        html += `
+          <div class="warning">
+            Ainda faltam dados decisivos. Comece por: vela molhada/seca, bico pingando ou não, 5 V com plug ligado/desligado e sinal do TPS.
+          </div>
+        `;
+      }
+
+      html += `<h3>Como interpretar agora</h3>`;
+      html += montarInterpretacao(data, ordenado);
+
+      html += `
+        <h3>O que não trocar sem testar</h3>
+        <ul>
+          <li>Não trocar TBI completo sem medir 5 V, TPS, bico e chicote.</li>
+          <li>Não trocar módulo antes de testar alimentação, aterramento, pulso do bico e curto no chicote.</li>
+          <li>Não condenar o sensor de temperatura novo sem verificar a leitura que chega na central.</li>
+          <li>Não trocar bomba antes de confirmar pressão e vazão.</li>
+        </ul>
+      `;
+
+      html += `
+        <h3>Conclusão técnica</h3>
+        <p>
+          Hipótese principal no momento: <strong>${top.nome}</strong>.
+          Nível de certeza: <strong>${nivelCerteza(top.score)}</strong>.
+        </p>
+      `;
+
+      if (top.evidence.length) {
+        html += `
+          <p><strong>Evidências:</strong></p>
+          <ul>${top.evidence.map(e => `<li>${e}</li>`).join("")}</ul>
+        `;
+      }
+
+      html += `
+        <div class="danger">
+          Se houver vazamento de combustível, cheiro muito forte, curto elétrico, fumaça ou risco de incêndio, não insista na partida.
+        </div>
+      `;
+
+      document.getElementById("resultado").innerHTML = html;
+    }
+
+    function montarInterpretacao(data, ordenado) {
+      let html = "<ul>";
+
+      if (data.vela === "molhada") {
+        html += "<li>Vela molhada confirma que há combustível entrando e não queimando corretamente. O próximo foco é excesso de combustível, bico pingando/comandado ou ignição fraca.</li>";
+      }
+
+      if (data.vela === "seca") {
+        html += "<li>Vela seca reduz a chance de afogamento. O foco muda para falta de injeção, falta de pulso do bico, alimentação ou rotação.</li>";
+      }
+
+      if (data.bicoParado === "pinga" || data.bicoParado === "esguicha") {
+        html += "<li>Bico pingando ou aberto com motor parado é defeito grave. Antes de trocar módulo, teste se o bico está travado ou se o fio de comando está aterrado direto.</li>";
+      }
+
+      if (data.v5Desligado !== null && data.v5Ligado !== null && data.v5Desligado >= 4.5 && data.v5Ligado < 4.2) {
+        html += "<li>A queda da linha de 5 V ao conectar o TBI é prova forte de curto no TBI, TPS, atuador, conector ou chicote.</li>";
+      }
+
+      if (data.tpsFechado !== null && data.tpsFechado > 1.2) {
+        html += "<li>TPS alto com borboleta fechada está fora do comportamento esperado. Verifique ajuste, terra, referência e sinal antes de condenar o sensor.</li>";
+      }
+
+      if (data.tempScanner !== null && data.tempScanner <= -30) {
+        html += "<li>Temperatura lida muito baixa, tipo -40 °C, geralmente indica circuito aberto. Isso pode enriquecer demais a partida.</li>";
+      }
+
+      if (data.tempScanner !== null && data.tempAmbiente !== null && data.tempScanner >= 100 && data.tempAmbiente < 40) {
+        html += "<li>Temperatura muito alta com motor frio indica leitura falsa por curto ou sensor/aplicação incorreta.</li>";
+      }
+
+      if (data.centelha === "fraca" || data.centelha === "ausente") {
+        html += "<li>Problema de centelha deve ser corrigido antes de insistir em testes de combustível, porque vela molhada também pode vir de falta de queima.</li>";
+      }
+
+      if (html === "<ul>") {
+        html += "<li>Preencha os testes principais para a ferramenta gerar uma interpretação mais conclusiva.</li>";
+      }
+
+      html += "</ul>";
+      return html;
+    }
+
+    function traduz(v) {
+      const map = {
+        nao_pega: "não pega",
+        pega_mal: "pega mal",
+        pega_normal: "pega normal",
+        pega: "pega",
+        ameaca: "ameaça pegar",
+        fica_funcionando: "fica funcionando",
+        pega_e_morre: "pega e morre",
+        nao_observado: "não observado",
+
+        molhada: "molhada de combustível",
+        seca: "seca",
+        carbonizada: "carbonizada/preta",
+        normal: "normal",
+
+        nao_pinga: "não pinga",
+        pinga: "pinga",
+        esguicha: "esguicha/aberto direto",
+        pulveriza: "pulveriza",
+        jorra: "jorra",
+        nao_injeta: "não injeta",
+
+        sim: "sim",
+        nao: "não",
+        bom: "bom",
+        ruim: "ruim",
+
+        forte: "forte",
+        fraca: "fraca",
+        ausente: "ausente",
+        pesado: "pesado",
+        nao_testado: "não testado"
+      };
+
+      return map[v] || v || "não informado";
+    }
+
+    function salvarLocal() {
+      const inputs = document.querySelectorAll("input, select, textarea");
+      const data = {};
+
+      inputs.forEach(el => {
+        if (el.type === "radio") {
+          data[el.name] = getRadio(el.name);
+        } else {
+          data[el.id] = el.value;
+        }
+      });
+
+      localStorage.setItem("diagnosticoVersaillesTBI", JSON.stringify(data));
+    }
+
+    function carregarLocal() {
+      const raw = localStorage.getItem("diagnosticoVersaillesTBI");
+      if (!raw) return;
+
+      try {
+        const data = JSON.parse(raw);
+
+        Object.keys(data).forEach(key => {
+          const byId = document.getElementById(key);
+
+          if (byId) {
+            byId.value = data[key];
+          } else {
+            const radio = document.querySelector(`input[name="${key}"][value="${data[key]}"]`);
+            if (radio) radio.checked = true;
+          }
+        });
+      } catch (e) {
+        console.warn("Não foi possível carregar dados salvos.", e);
+      }
+    }
+
+    function limparTudo() {
+      if (!confirm("Limpar todos os dados preenchidos?")) return;
+
+      localStorage.removeItem("diagnosticoVersaillesTBI");
+
+      document.querySelectorAll("input, select, textarea").forEach(el => {
+        if (el.type === "radio") {
+          el.checked = false;
+        } else if (el.id === "veiculo") {
+          el.value = "Ford Versailles";
+        } else {
+          el.value = "";
+        }
+      });
+
+      document.getElementById("resultado").innerHTML = "";
+      document.getElementById("urgenciaBox").className = "result-box";
+      document.getElementById("urgenciaBox").innerHTML = "Preencha os testes e clique em analisar.";
+    }
+
+    function exportarJSON() {
+      const data = coletarDados();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "diagnostico_versailles_tbi.json";
+      a.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener("input", salvarLocal);
+    document.addEventListener("change", salvarLocal);
+    window.addEventListener("load", carregarLocal);
+  </script>
+</body>
+</html>
